@@ -1,0 +1,39 @@
+/* components/Navigation/Navigation.module.css */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: rgba(0, 0, 0, 0.9);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .logo {
+    color: #fff;
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  .links {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  .links a:hover {
+    color: #44d62c;
+  }
+  
+  .active {
+    color: #44d62c !important;
+    border-bottom: 2px solid #44d62c;
+  }

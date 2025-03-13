@@ -1,0 +1,111 @@
+/* components/MainContent/MainContent.module.css */
+.container {
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    color: white;
+  }
+  
+  .subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #888;
+  }
+  
+  .title {
+    font-size: 3rem;
+    margin-bottom: 3rem;
+    line-height: 1.2;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  
+  .buttonPrimary {
+    background: #44d62c;
+    color: black;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .buttonSecondary {
+    
+    background: transparent;
+    color: #44d62c;
+    padding: 1rem 2rem;
+    border: 2px solid #44d62c;
+    border-radius: 25px;
+    font-size: 1.7rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .buttonOutline {
+    background: #333;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.7rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .platforms {
+    padding: 2rem;
+    color: #666;
+  }
+
+  .error {
+    color: #ff4444;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ff4444;
+    border-radius: 4px;
+  }
+
+  /* 입력 필드 스타일 */
+.inputContainer {
+  margin: 2rem 0;
+  width: 80%;
+  max-width: 500px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #1DB954;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  background: transparent;
+  color: white;
+  outline: none;
+}
+
+.inputField::placeholder {
+  color: #888;
+}
+  
+  @media (max-width: 768px) {
+    .title {
+      font-size: 2rem;
+    }
+    
+    .buttonGroup {
+      flex-direction: column;
+      width: 80%;
+    }
+  }
