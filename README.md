@@ -1,6 +1,6 @@
 # Blocker_Manufacturer_Frontend
 
-- Front End : React
+- Front-End : React
   - Version
     - create-react-app@5.1.0
     - node.js : v20.15.0
