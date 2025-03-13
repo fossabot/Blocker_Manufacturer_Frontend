@@ -7,8 +7,10 @@ const api = axios.create({
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*', // CORS 정책 추가
   }
 });
+
 
 // 요청 인터셉터
 api.interceptors.request.use(config => {
