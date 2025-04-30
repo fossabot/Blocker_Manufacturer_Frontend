@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # 호스트 포트 3000을 컨테이너 포트 3000에 매핑
+    volumes:
+      - .:/app # 호스트 디렉토리를 컨테이너의 /app에 마운트
+      - /app/node_modules # node_modules는 호스트와 공유하지 않음
+    environment:
+      - NODE_ENV=development
+    command: npm start
