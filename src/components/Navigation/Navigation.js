@@ -8,13 +8,13 @@ function Navigation() {
       <h1 className={styles.logo}>BLOCKER</h1>
       <div className={styles.links}>
         <NavLink to="/" className={({isActive}) => isActive ? styles.active : ''}>
-          Home
+          Software Update
         </NavLink>
-        <NavLink to="/about" className={({isActive}) => isActive ? styles.active : ''}>
-          About
+        <NavLink to="/update_file_management" className={({isActive}) => isActive ? styles.active : ''}>
+          Update File Management
         </NavLink>
-        <NavLink to="/contact" className={({isActive}) => isActive ? styles.active : ''}>
-          Contact
+        <NavLink to="/update_monitoring" className={({isActive}) => isActive ? styles.active : ''}>
+          Update Monitoring
         </NavLink>
       </div>
     </nav>
