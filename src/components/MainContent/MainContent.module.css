@@ -1,11 +1,11 @@
 /* components/MainContent/MainContent.module.css */
 .container {
-    text-align: center;
+    text-align: left;
     padding: 8rem 2rem 4rem;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
+
     justify-content: center;
     background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
     color: white;

@@ -35,8 +35,8 @@ function MainContent() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>HSU Blocker</h1>
-      <h2 className={styles.title}>Blockchain IoT Software Update Framework</h2>
+      <h1 className={styles.title}>Blockchain with CP-ABE</h1>
+      <h2 className={styles.title}>AutoMobile Software Update</h2>
 
       <div className={styles.platforms}>
         <h1>Deploying Software Update!</h1>
