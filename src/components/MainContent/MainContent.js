@@ -38,7 +38,7 @@ function MainContent() {
       <h1 className={styles.title}>Blockchain with CP-ABE</h1>
       <h2 className={styles.title}>AutoMobile Software Update</h2>
 
-      <div className={styles.platforms}>
+      {/* <div className={styles.platforms}>
         <h1>Deploying Software Update!</h1>
       </div>
 
@@ -74,7 +74,7 @@ function MainContent() {
         >
           Learn More
         </button>
-      </div>
+      </div> */}
 
       {error && <div className={styles.error}>{error}</div>}
     </div>
