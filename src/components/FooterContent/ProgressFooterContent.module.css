@@ -1,0 +1,110 @@
+/* FooterContent.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed; /* 뷰포트(화면)에 대해 위치를 고정 */
+    bottom: 10%; /* 화면의 가장 아래쪽에 배치 */
+    left: 0; /* 화면의 가장 왼쪽에 정렬 */
+    width: 100%; /* 화면 전체 너비를 차지 */
+    z-index: 100; /* 다른 콘텐츠보다 위에 표시되도록 z-index 설정 (충분히 높은 값) */
+    padding: 15px 0; /* 하단 바 내부의 상하 패딩 (내용과의 간격) */
+    /* box-sizing: border-box; padding이 width에 포함되도록 설정 */
+    /* --- 고정 스타일 끝 --- */
+    }
+    
+    .label {
+      font-size: 1.5rem;
+      color: white; /* 라벨 색상 */
+      margin-bottom: 3%; /* 라벨 아래 여백 */
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .barTrack {
+      width: 100%; /* 바의 너비 */
+      height: 10px; /* 바의 높이 */
+      background-color: white; /* 바의 배경색 */
+      align-items: right; /* 이 속성은 flex 컨테이너의 align-items와 함께 사용해야 유효하며, 여기서 원하는 효과를 내지 않습니다. */
+      margin-left: auto; /* 이 속성으로 바가 오른쪽으로 밀립니다. */
+      position: relative; /* .cubeButton의 absolute 포지셔닝 기준 */
+      justify-content: center; /* 바 트랙 내에서 내용을 중앙에 배치 (cubeButton이 absolute라 큰 영향 없지만 다른 내용 추가 시) */
+      align-items: center; /* .cubeButton을 세로 중앙에 배치 */
+    }
+    
+    .cubeButton {
+      width: 50px; /* 정육면체 크기 30px -> 50px */
+      height: 50px; /* 정육면체 크기 30px -> 50px */
+      position: absolute; /* 가로 바 내에서 절대 위치 지정 */
+      left: 50%;
+      top: 53%;
+      /* transform의 translateZ 값을 정육면체 새 크기(50px)의 절반인 25px로 업데이트 */
+      transform: translate(-50%, -50%) rotateX(45deg) rotateY(45deg); /* rotateX, rotateY는 유지 */
+      transform-style: preserve-3d; /* 자식 요소에 3D 변형 적용 */
+      cursor: pointer; /* 클릭 가능한 요소임을 표시 */
+      transition: transform 0.2s ease-in-out; /* CHANGED - 트랜지션 속성을 기본 상태에 적용 */
+    }
+    
+    /* 정육면체 면 스타일 */
+    /* 각 면의 크기와 배경색, 그리고 3D 공간에서의 위치와 회전 설정 */
+    
+  /* 정육면체 면 스타일 */
+  .cubeFaceTop,
+  .cubeFaceFront,
+  .cubeFaceRight,
+  .cubeFaceLeft, /* 추가된 면 */
+  .cubeFaceBack, /* 추가된 면 */
+  .cubeFaceBottom /* 추가된 면 */
+  {
+    position: absolute;
+    width: 50px; /* 면의 너비는 정육면체 새 크기와 같게 */
+    height: 50px; /* 면의 높이는 정육면체 새 크기와 같게 */
+  }
+  
+  .cubeFaceTop {
+    background-color: white;
+    transform: rotateX(90deg) translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  .cubeFaceFront {
+    background-color: white;
+    transform: translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  .cubeFaceRight {
+    background-color: white;
+    transform: rotateY(90deg) translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  /* 추가적인 면 스타일 */
+  .cubeFaceLeft {
+    background-color: lightgray;
+    transform: rotateY(-90deg) translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  .cubeFaceBack {
+    background-color: white;
+    transform: rotateX(180deg) translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  .cubeFaceBottom {
+    background-color: gray;
+    transform: rotateX(-90deg) translateZ(25px); /* translateZ 값을 50px의 절반인 25px로 업데이트 */
+  }
+  
+  /* 호버 상태 스타일 */
+  .cubeButton:hover {
+    /* transform의 translate, rotate는 유지하고 scale만 변경 */
+    transform: translate(-50%, -50%) scale(1.3); /* 호버 시 약간 확대 */
+    transition: transform 0.2s ease-in-out; /* 부드러운 전환 효과 */
+  }
+  
+  /* 클릭 활성 상태 스타일 */
+  .cubeButton:active {
+    /* transform의 translate, rotate는 유지하고 scale만 변경 */
+    transform: translate(-50%, -50%) scale(0.95); /* 클릭 시 약간 축소 */
+  }
+  
+  /* .barTrack에 align-items: right; 는 유효하지 않습니다. */
+  /* .barTrack의 display: flex; 와 align-items: center; 는 .cubeButton을 세로 중앙에 맞추는 데 사용됩니다. */
+  /* 가로 바 자체를 오른쪽으로 보내려면 .barTrack에 margin-left: auto; 를 사용하시면 됩니다. */

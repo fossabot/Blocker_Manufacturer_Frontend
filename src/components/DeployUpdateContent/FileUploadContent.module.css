@@ -1,0 +1,115 @@
+.background {
+    text-align: left;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-image: url('../../assets/N74.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    position: relative;
+    z-index: 1;
+  }
+
+  .background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+  }
+
+.container {
+  /* 컴포넌트 전체 컨테이너 스타일 */
+  /* 기본 배경 위의 레이어 역할을 하며, 자체 배경색 가짐 */
+  display: flex;
+  flex-direction: column; /* 자식 요소들을 세로 방향으로 배치 */
+  padding: 10px 20px; /* 상하 10px, 좌우 20px 패딩 */
+  background-color: transparent; /* 이미지와 같은 어두운 배경 */
+  color: white; /* 기본 텍스트 색상 */
+  font-family: sans-serif; /* 예시 폰트 */
+  width: 50%; /* CHANGED - 부모 요소의 50% 너비 차지 */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 설정 */
+  margin: 0 auto; /* ADDED - 좌우 마진을 자동으로 설정하여 부모 요소 내에서 가운데 정렬 */
+}
+
+.topRow {
+  /* "파일" 정보와 업로드 섹션을 가로로 배치할 컨테이너 */
+  display: flex;
+  justify-content: space-between; /* "파일" 정보와 업로드 섹션 사이에 공간을 최대로 분배 */
+  align-items: center; /* 세로 중앙 정렬 */
+  width: 100%; /* 부모(.container)의 전체 너비 차지 */
+  margin-bottom: 5px; /* 하단 선과의 간격 */
+}
+
+.fileInfo {
+  /* "파일" 텍스트, 세로선, 파일명을 가로로 배치할 컨테이너 */
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+}
+
+.fileLabel {
+  font-size: 2.2rem; /* "파일" 텍스트 크기 */
+  margin-right: 10px; /* "파일" 텍스트와 세로선 사이 간격 */
+  font-family: 'Orbitron', sans-serif;
+}
+
+.verticalLine {
+  width: 1px; /* 세로선 두께 */
+  height: 40px; /* 세로선 높이 (텍스트 높이와 맞추기) */
+  background-color: white; /* 세로선 색상 */
+  margin-right: 10px; /* 세로선과 파일명/오른쪽 요소 사이 간격 */
+}
+
+.uploadedFileName {
+  font-size: 1.8rem; /* 파일명 텍스트 크기 (label과 맞춤) */
+  color: #ccc; /* 파일명 색상 (원한다면 연하게) */
+  font-family: 'Orbitron', sans-serif;
+}
+
+.uploadSection {
+    /* 오른쪽의 흰 바와 업로드 버튼을 가로로 배치할 컨테이너 */
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+.whiteBar {
+    width: 80px; /* 흰색 바의 너비 (이미지와 비슷하게 조정) */
+    height: 5px; /* 흰색 바의 높이 (이미지와 비슷하게 조정) */
+    background-color: white; /* 흰색 바 색상 */
+    margin-right: 15px; /* 흰색 바와 업로드 버튼 사이 간격 */
+}
+
+.uploadButton {
+  background-color: transparent; /* 투명 배경 */
+  color: white; /* 하얀색 텍스트 */
+  border: 1px solid transparent; /* (선택 사항) 하얀색 테두리 */
+  padding: 5px 10px; /* 버튼 내부 여백 */
+  cursor: pointer; /* 클릭 가능한 요소임을 표시 */
+  font-size: 2rem; /* 버튼 텍스트 크기 */
+  /* 기본 버튼 스타일 제거 */
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.uploadButton:hover {
+    /* (선택 사항) 호버 시 스타일 변화 */
+    background-color: rgba(255, 255, 255, 0.1); /* 연한 배경색 */
+}
+
+.horizontalLine {
+  width: 100%; /* 부모(.container)의 전체 너비 차지 */
+  height: 1px; /* 선 두께 */
+  background-color: white; /* 선 색상 */
+}
+
+.hiddenFileInput {
+  display: none; /* 기본 파일 입력 요소는 화면에 보이지 않도록 숨김 */
+}

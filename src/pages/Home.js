@@ -16,7 +16,7 @@ function Home() {
     <div>
       <Navigation />
       <MainContent />
-      <FooterContent label={"소프트웨어 업데이트 시작하기"} onClick={handleCubeClick}/>
+      <FooterContent label={"Software Update Start!!"} onClick={handleCubeClick}/>
     </div>
   );
 }
