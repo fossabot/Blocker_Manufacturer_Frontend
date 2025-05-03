@@ -9,7 +9,7 @@ function UpdateSetting() {
   const navigate = useNavigate();
 
   const handleCubeClick = () => {
-    navigate('/upload');
+    navigate('/access');
   }
 
   const handleBackClick = () => {
