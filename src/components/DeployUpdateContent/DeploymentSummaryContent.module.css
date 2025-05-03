@@ -1,0 +1,132 @@
+/* src/components/DeploymentSummary/DeploymentSummary.module.css */
+
+.container {
+    /* 컴포넌트 전체 컨테이너 스타일 */
+    /* 배경은 부모 요소에서 채워집니다. */
+    width: 100%; /* 부모 요소의 전체 너비 차지 또는 필요시 고정 너비 */
+    padding: 20px; /* 내부 여백 */
+    box-sizing: border-box; /* 패딩을 너비에 포함 */
+    color: white; /* 기본 텍스트 색상 */
+    font-family: sans-serif; /* 예시 폰트 (Orbitron은 특정 요소에 적용) */
+    /* 부모 요소의 Flexbox 등에 의해 가운데 정렬되거나 위치가 결정될 것으로 예상 */
+  }
+  
+  .section {
+    /* 각 정보 섹션 (파일 정보, 업데이트 상세, 정책 조건) 컨테이너 */
+    margin-bottom: 20px; /* 섹션 아래 간격 */
+  }
+  
+  .sectionTitle {
+    font-size: 1.5rem; /* 섹션 제목 글자 크기 */
+    font-family: 'Orbitron', sans-serif; /* Orbitron 폰트 적용 */
+    color: white; /* 흰색 글자색 */
+    margin-bottom: 10px; /* 제목 아래 간격 */
+  }
+  
+  .infoRow {
+    /* 파일 정보, 업데이트 상세 등의 개별 정보 행 */
+    display: flex; /* 라벨과 값을 가로로 배치 */
+    align-items: baseline; /* 텍스트 기준선 정렬 */
+    margin-bottom: 8px; /* 정보 행들 사이 간격 */
+  }
+  
+  .infoLabel {
+    /* 정보 항목 라벨 (예: File Name:, Price:) */
+    font-weight: bold; /* 글자 굵게 */
+    margin-right: 10px; /* 라벨과 값 사이 간격 */
+    font-size: 1rem; /* 글자 크기 */
+    color: #ccc; /* 연한 회색 라벨 색상 */
+    font-family: 'Orbitron', sans-serif; /* Orbitron 폰트 적용 */
+    flex-shrink: 0; /* 공간 부족 시 라벨이 줄어들지 않도록 함 */
+  }
+  
+  .infoValue {
+    /* 정보 항목 값 (예: uploaded_file.zip, 1,000,000 ETH) */
+    font-size: 1rem; /* 글자 크기 */
+    color: white; /* 흰색 글자색 */
+    word-break: break-all; /* 긴 단어가 넘칠 경우 줄 바꿈 */
+  }
+  
+  .descriptionValue {
+      /* 업데이트 설명 값 (여러 줄 입력 고려) */
+      font-size: 1rem;
+      color: white;
+      word-break: break-all;
+      white-space: pre-wrap; /* 원본 줄 바꿈 유지 */
+      margin-left: 10px; /* 라벨과의 정렬을 위해 약간 들여쓰기 */
+  }
+  
+  
+  .dividingLine {
+    /* 섹션들을 구분하는 가로선 */
+    width: 100%; /* 전체 너비 */
+    height: 1px; /* 선 두께 */
+    background-color: rgba(255, 255, 255, 0.3); /* 연한 하얀색 선 */
+    margin: 20px 0; /* 위아래 간격 */
+  }
+  
+  /* 정책 조건 섹션 스타일 */
+  .policyConditions {
+    /* 정책 조건 목록 전체 컨테이너 */
+  }
+  
+  .policyType {
+      /* 각 정책 유형 (모델명:, 일련번호: ...) 행 */
+      display: flex; /* 라벨, 구분자, 값 리스트를 가로로 배치 */
+      align-items: baseline; /* 텍스트 기준선 정렬 */
+      margin-bottom: 8px; /* 정책 유형 행들 사이 간격 */
+  }
+  
+  .policyLabel {
+      /* 정책 유형 라벨 (예: 모델명:, 일련번호:) */
+      font-weight: bold;
+      margin-right: 5px; /* 라벨과 구분자 사이 간격 */
+      font-size: 1rem;
+      color: #ccc; /* 라벨 색상 */
+      font-family: 'Orbitron', sans-serif;
+      flex-shrink: 0;
+  }
+  
+  .policySeparator {
+      /* 라벨과 값 리스트 사이 구분자 (:) */
+      margin-right: 5px; /* 구분자와 값 리스트 사이 간격 */
+      color: #ccc;
+  }
+  
+  .policyValues {
+      /* 해당 정책 유형의 값 리스트 컨테이너 */
+      display: flex; /* 값들을 가로로 배치 */
+      flex-wrap: wrap; /* 공간 부족 시 다음 줄로 넘김 */
+      font-size: 1rem;
+      color: white;
+      word-break: break-all;
+      /* 라벨 및 구분자와의 정렬을 위해 flex-start 또는 padding-left 조정 가능 */
+  }
+  
+  .policyValueItem {
+      /* 정책 값 리스트의 개별 항목 */
+      /* 값들 사이의 쉼표는 JS에서 추가 */
+  }
+  
+  
+  .buttonContainer {
+    /* 배포 버튼을 담는 컨테이너 */
+    text-align: center; /* 버튼 가운데 정렬 */
+    margin-top: 30px; /* 섹션과의 간격 */
+  }
+  
+  .deployButton {
+    /* 배포 버튼 스타일 */
+    background-color: transparent; /* 배경 투명 */
+    color: white; /* 글자색 하얀색 */
+    border: 1px solid white; /* 하얀색 테두리 */
+    padding: 10px 20px; /* 내부 여백 */
+    font-size: 1.2rem; /* 글자 크기 */
+    font-family: 'Orbitron', sans-serif; /* Orbitron 폰트 */
+    cursor: pointer; /* 클릭 가능한 요소 표시 */
+    transition: background-color 0.3s ease; /* 호버 시 부드러운 전환 효과 */
+  }
+  
+  .deployButton:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* 호버 시 연한 배경색 */
+  }
