@@ -34,7 +34,7 @@ function MainContent() {
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <h1 className={styles.title}>Blockchain with CP-ABE</h1>
       <h2 className={styles.title}>AutoMobile Software Update</h2>
 

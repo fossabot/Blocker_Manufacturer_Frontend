@@ -31,7 +31,6 @@ function FileUploadContent() {
     };
 
   return (
-  <div className={styles.background}>
     <div className={styles.container}>
       {/* "파일" 텍스트, 파일명, 업로드 섹션을 담는 가로 행 */}
       <div className={styles.topRow}>
@@ -64,7 +63,6 @@ function FileUploadContent() {
       {/* 하단 가로선 */}
       <div className={styles.horizontalLine}></div>
     </div>
-  </div>
   );
 }
 

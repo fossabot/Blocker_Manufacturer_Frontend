@@ -1,0 +1,112 @@
+/* src/components/UpdateForm/UpdateForm.module.css - 파일 업로드 컴포넌트 테마 적용 */
+
+.container {
+    /* 전체 컨테이너: Flexbox를 사용하여 왼쪽/오른쪽 컬럼으로 나눔 */
+    display: flex;
+    /* 이미지에서는 이 컨테이너가 특정 영역 너비를 차지하는 것으로 보입니다. */
+    /* 너비는 부모 요소에 의해 결정될 수 있으므로 100%로 유지하거나 부모에서 제어합니다. */
+    width: 100%;
+    /* 배경은 상위 요소에서 올 것으로 예상하므로 여기서는 설정하지 않습니다. */
+    padding: 20px; /* 컨테이너 내부 여백 */
+    box-sizing: border-box; /* 패딩을 너비에 포함 */
+    color: white; /* 기본 글자색 (입력 텍스트, 라벨 등) */
+    font-family: sans-serif; /* 예시 폰트 (Orbitron은 개별 요소에 적용) */
+  }
+  
+  .leftColumn {
+    flex: 1; /* 남은 공간을 균등하게 분배받아 왼쪽 컬럼 너비 설정 */
+    padding-left: 5%;
+    padding-right: 5%; /* 왼쪽 컬럼과 오른쪽 컬럼 사이 간격 */
+    display: flex;
+    flex-direction: column; /* 입력 그룹들을 세로로 쌓음 */
+    gap: 40%; /* 입력 그룹들 사이 세로 간격 (필요에 따라 조정) */
+  }
+  
+  .rightColumn {
+    flex: 1; /* 남은 공간을 균등하게 분배받아 오른쪽 컬럼 너비 설정 */
+    padding-left: 5%; /* 왼쪽 컬럼과 오른쪽 컬럼 사이 간격 */
+    padding-right: 5%; /* 왼쪽 컬럼과 오른쪽 컬럼 사이 간격 */
+    display: flex;
+    flex-direction: column; /* 입력 그룹들을 세로로 쌓음 */
+  }
+  
+  .inputGroup {
+    /* 라벨과 입력 필드를 묶는 컨테이너 */
+    display: flex;
+    flex-direction: column; /* 라벨과 입력 필드를 세로로 쌓음 */
+  }
+  
+  .label {
+    font-size: 2rem; /* 라벨 글자 크기 */
+    margin-bottom: 5px; /* 라벨과 입력 필드 사이 간격 */
+    color: #ccc; /* 라벨 글자색 (이미지와 유사하게 조정) */
+    font-family: 'Orbitron', sans-serif; /* CHANGED - Orbitron 폰트 적용 */
+  }
+  
+  /* 입력 필드(input, textarea)의 공통 기본 스타일 */
+  /* 배경 투명, 글자 하얀색, 기본 테두리 제거, 포커스 외곽선 제거 */
+  .input,
+  .textarea {
+    background-color: transparent; /* CHANGED - 배경 투명색 */
+    color: white; /* CHANGED - 입력 텍스트 색상 */
+    border: none; /* 기본 테두리 제거 */
+    outline: none; /* 포커스 시 나타나는 기본 외곽선 제거 */
+    width: 100%; /* 부모(.inputGroup)의 전체 너비 차지 */
+    font-size: 1.7rem; /* 입력 텍스트 크기 */
+    box-sizing: border-box; /* 패딩을 너비에 포함 */
+    font-family: 'Orbitron', sans-serif; /* CHANGED - Orbitron 폰트 적용 */
+  }
+  
+  /* textarea 전용 스타일 */
+  .textarea {
+      resize: none; /* 사용자가 크기 조절 핸들 드래그 불가 (선택 사항) */
+      min-height: 150px; /* 최소 높이 (필요에 따라 조정) */
+      line-height: 1.5; /* 줄 간격 (여러 줄 입력 시 가독성 위함) */
+  }
+  
+  
+  /* 특정 테두리 스타일: 아래쪽 테두리만 (업데이트 명, 가격) */
+  .bottomBorderInput {
+    border-bottom: 3px solid white; /* CHANGED - 하얀색 아래쪽 테두리 */
+    padding: 5px 0; /* 위아래 패딩 (텍스트와 테두리 사이 공간) */
+  }
+  
+  /* 특정 테두리 스타일: 위쪽 및 아래쪽 테두리 (업데이트 설명) */
+  .topBottomBorderInput {
+    border-top: 3px solid white; /* CHANGED - 하얀색 위쪽 테두리 */
+    border-bottom: 3px solid white; /* CHANGED - 하얀색 아래쪽 테두리 */
+    padding: 10px 0; /* 위아래 패딩 (텍스트와 테두리 사이 공간) */
+  }
+  
+  
+  /* 가격 입력 필드와 ETH 단위를 감싸는 컨테이너 */
+  .priceInputContainer {
+      display: flex; /* 입력 필드와 단위를 가로로 배치 */
+      align-items: center; /* 세로 중앙 정렬 */
+      width: 100%; /* 부모(.inputGroup)의 전체 너비 차지 */
+      /* 테두리는 입력 필드 자체에 적용됩니다. */
+  }
+  
+  /* 가격 입력 필드 전용 스타일: 단위가 들어갈 공간 확보 */
+  .priceInput {
+      flex-grow: 1; /* 남은 공간을 모두 차지하여 입력 필드 너비 조정 */
+      width: auto; /* .input의 100% 설정을 오버라이드 */
+      margin-right: 5px; /* 입력 필드와 단위 사이 간격 */
+  }
+  
+  /* 가격 단위 (ETH) 텍스트 스타일 */
+  .priceUnit {
+      font-size: 1.7rem; /* 입력 필드 텍스트 크기와 맞춤 */
+      color: white; /* CHANGED - 하얀색 텍스트 */
+      flex-shrink: 0; /* 공간 부족 시 줄어들지 않도록 함 */
+      font-family: 'Orbitron', sans-serif; /* CHANGED - Orbitron 폰트 적용 */
+  }
+  
+  
+  /* (선택 사항) 입력 필드 포커스 시 스타일 */
+  .input:focus,
+  .textarea:focus {
+      /* 포커스 시에도 하얀색 테두리를 유지하거나 다른 효과를 줄 수 있습니다. */
+      border-color: white; /* 예시: 포커스 시 테두리 색상 유지 */
+      /* box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); /* 예시: 연한 그림자 */
+  }

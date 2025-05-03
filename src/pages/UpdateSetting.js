@@ -1,30 +1,30 @@
 import React from 'react';
 import HeaderContent from '../components/HeaderContent/HeaderContent';
 import ProgressFooterContent from '../components/FooterContent/ProgressFooterContent';
-import FileUploadContent from '../components/DeployUpdateContent/FileUploadContent';
+import UpdateSettingContent from '../components/DeployUpdateContent/UpdateSettingContent';
 import BackgroundContent from '../components/Background/BackgroundContent';
 import { useNavigate } from 'react-router-dom';
 
-function FileUpload() {
+function UpdateSetting() {
   const navigate = useNavigate();
 
   const handleCubeClick = () => {
-    navigate('/setting');
+    navigate('/upload');
   }
 
   const handleBackClick = () => {
-    navigate('/');
+    navigate('/upload');
   }
 
   return (
     <div>
-        <HeaderContent title={"1. Preparing Update File"} onBackClick={handleBackClick}/>
-          <BackgroundContent>
-            <FileUploadContent />
-          </BackgroundContent>
-        <ProgressFooterContent label={"1. Preparing Update File"} onClick={handleCubeClick}/>
+        <HeaderContent title={"2. Update Settings"} onBackClick={handleBackClick}/>
+        <BackgroundContent>
+        <UpdateSettingContent />
+        </BackgroundContent>
+        <ProgressFooterContent label={"2. Update Settings"} onClick={handleCubeClick}/>
     </div>
   );
 }
 
-export default FileUpload;
+export default UpdateSetting;
