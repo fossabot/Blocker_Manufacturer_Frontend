@@ -92,6 +92,7 @@
       flex-grow: 1; /* 남은 공간을 모두 차지하여 입력 필드 너비 조정 */
       width: auto; /* .input의 100% 설정을 오버라이드 */
       margin-right: 5px; /* 입력 필드와 단위 사이 간격 */
+      text-align: right;
   }
   
   /* 가격 단위 (ETH) 텍스트 스타일 */
