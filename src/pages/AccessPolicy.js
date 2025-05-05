@@ -32,7 +32,7 @@ function AccessPolicy({ onPolicyConditionsChange, policyConditions }) { // <-- p
 
   return (
     <div>
-      <HeaderContent title={"3. Access Control Policy Settings"} onBackClick={handleBackClick} />
+      <HeaderContent title={"Access Control Policy Settings"} onBackClick={handleBackClick} />
       <BackgroundContent>
         {/* AccessPolicyContent에 정책 조건 값 변경 핸들러 prop으로 전달 */}
         {/* AccessPolicyContent가 렌더링될 때 App.js의 현재 정책 조건 상태를 초기값으로 받도록 prop으로 전달 */}
@@ -41,7 +41,7 @@ function AccessPolicy({ onPolicyConditionsChange, policyConditions }) { // <-- p
           initialValues={policyConditions} // <-- App.js에서 받은 정책 조건 상태를 initialValues prop으로 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"3. Access Control Policy Settings"} onClick={handleCubeClick} />
+      <ProgressFooterContent label={"Access Control Policy Settings"} onClick={handleCubeClick} />
     </div>
   );
 }

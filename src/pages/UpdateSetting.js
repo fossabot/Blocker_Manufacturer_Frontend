@@ -27,7 +27,7 @@ function UpdateSetting({ onUpdateSettingsChange, updateName, price, description 
 
   return (
     <div>
-      <HeaderContent title={"2. Update Settings"} onBackClick={handleBackClick} />
+      <HeaderContent title={"Update Settings"} onBackClick={handleBackClick} />
       <BackgroundContent>
         {/* UpdateSettingContent에 설정 값 변경 핸들러와 현재 설정 값들을 prop으로 전달 */}
         <UpdateSettingContent
@@ -37,7 +37,7 @@ function UpdateSetting({ onUpdateSettingsChange, updateName, price, description 
           description={description} // <-- prop 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"2. Update Settings"} onClick={handleCubeClick} />
+      <ProgressFooterContent label={"Update Settings"} onClick={handleCubeClick} />
     </div>
   );
 }

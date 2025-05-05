@@ -5,6 +5,7 @@ import FileUploadPage from './pages/FileUpload';
 import UpdateSettingPage from './pages/UpdateSetting';
 import AccessPolicyPage from './pages/AccessPolicy';
 import DeploymentSummaryPage from './pages/DeploymentSummary';
+import DeploymentCompletePage from './pages/DeploymentComplete';
 
 
 function App() {
@@ -113,6 +114,7 @@ function App() {
             path="/summary"
             element={<DeploymentSummaryPage deploymentData={deploymentData} onDeployConfirm={handleDeploy} />}
           />
+          <Route path='/complete' element={<DeploymentCompletePage />} />
         </Routes>
       </main>
     </div>

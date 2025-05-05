@@ -26,7 +26,7 @@ function FileUpload({ onFileSelected, uploadedFileName }) { // prop 변경 및 �
 
   return (
     <div>
-      <HeaderContent title={"1. Preparing Update File"} onBackClick={handleBackClick} />
+      <HeaderContent title={"Preparing Update File"} onBackClick={handleBackClick} />
       <BackgroundContent>
         {/* FileUploadContent에 파일 객체 선택 핸들러와 현재 파일명 상태 prop으로 전달 */}
         {/* FileUploadContent는 이제 자체 state 대신 이 핸들러를 호출하고 currentFileName prop을 표시합니다. */}
@@ -35,7 +35,7 @@ function FileUpload({ onFileSelected, uploadedFileName }) { // prop 변경 및 �
           currentFileName={uploadedFileName} // <-- App.js로부터 받은 파일명 상태 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"1. Preparing Update File"} onClick={handleCubeClick} />
+      <ProgressFooterContent label={"Preparing Update File"} onClick={handleCubeClick} />
     </div>
   );
 }
