@@ -1,0 +1,18 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2% 5%;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .logo {
+    color: #fff;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+  }

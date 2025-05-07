@@ -6,6 +6,7 @@ import UpdateSettingPage from './pages/UpdateSetting';
 import AccessPolicyPage from './pages/AccessPolicy';
 import DeploymentSummaryPage from './pages/DeploymentSummary';
 import DeploymentCompletePage from './pages/DeploymentComplete';
+import UpdateMonitoringPage from './pages/UpdateMonitoring';
 
 
 function App() {
@@ -85,7 +86,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<div>About Page</div>} />
-          <Route path="/contact" element={<div>Contact Page</div>} />
+          <Route path="/monitoring" element={<UpdateMonitoringPage />} />
 
           {/* FileUpload 페이지에 파일 객체 선택 핸들러와 현재 파일명 상태 전달 */}
           <Route

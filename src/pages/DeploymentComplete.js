@@ -1,6 +1,6 @@
 // src/pages/DeploymentComplete.js
 import React, { useState } from 'react'; // useState는 이 컴포넌트에서 사용하지 않아도 됩니다.
-import HeaderContent from '../components/HeaderContent/HeaderContent';
+import CompleteHeaderContent from '../components/HeaderContent/CompleteHeaderContent';
 import CompleteFooterContent from '../components/FooterContent/CompleteFooterContent'; // 이 푸터가 필요한지 확인 필요
 import BackgroundContent from '../components/Background/BackgroundContent';
 import DeploymentCompleteContent from '../components/DeployUpdateContent/DeploymentCompleteContent'; // 수정된 컴포넌트 임포트
@@ -20,7 +20,7 @@ function DeploymentComplete() {
     // '업데이트 현황' 버튼 클릭 시 실행될 핸들러
     const handleUpdateStatusNavigation = () => {
         console.log("Navigate to Update Status");
-        navigate('/update-status'); // 업데이트 현황 경로로 이동 (App.js에 이 경로가 정의되어 있어야 함)
+        navigate('/monitoring'); // 업데이트 현황 경로로 이동 (App.js에 이 경로가 정의되어 있어야 함)
     };
 
     // ProgressFooterContent에 사용되는 핸들러 (예시로 남겨둡니다)
@@ -40,7 +40,7 @@ function DeploymentComplete() {
             {/* 배포 완료 페이지의 헤더 */}
             {/* 이 페이지에서는 보통 뒤로가기 버튼이 없거나 동작이 다릅니다. */}
             {/* title을 "배포 완료" 등으로 변경하는 것이 더 자연스럽습니다. */}
-            <HeaderContent title={"Software Update Deployment Complete!"} onBackClick={handleBackClick} />
+            <CompleteHeaderContent title={"Software Update Deployment Complete!"} onBackClick={handleBackClick} />
 
             <BackgroundContent>
                 {/* DeploymentCompleteContent 컴포넌트를 렌더링하고, */}

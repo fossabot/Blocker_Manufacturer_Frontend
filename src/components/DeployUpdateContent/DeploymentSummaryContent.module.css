@@ -101,7 +101,7 @@
   /* 글자 굵게 */
   margin-right: 10px;
   /* 라벨과 값 사이 간격 */
-  font-size: 1.3rem;
+  font-size: 1rem;
   /* 글자 크기 */
   color: #ccc;
   /* 연한 회색 라벨 색상 */
@@ -114,7 +114,7 @@
 
 .infoValue {
   /* 정보 항목 값 (예: uploaded_file.zip, 1,000,000 ETH) */
-  font-size: 1.3rem;
+  font-size: 1rem;
   /* 글자 크기 */
   color: white;
   /* 흰색 글자색 */
@@ -126,7 +126,7 @@
 
 .descriptionValue {
   /* 업데이트 설명 값 (여러 줄 입력 고려) */
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: white;
   word-break: break-all;
   white-space: pre-wrap;
@@ -173,7 +173,7 @@
   font-weight: bold;
   margin-right: 5px;
   /* 라벨과 구분자 사이 간격 */
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: #ccc;
   /* 라벨 색상 */
   font-family: 'Orbitron', sans-serif;
@@ -197,7 +197,7 @@
   /* 값들을 가로로 배치 */
   flex-wrap: wrap;
   /* 공간 부족 시 다음 줄로 넘김 */
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: white;
   word-break: break-all;
   flex-grow: 1;

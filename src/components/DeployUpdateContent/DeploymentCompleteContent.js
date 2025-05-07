@@ -2,18 +2,7 @@ import React from 'react';
 import styles from './DeploymentCompleteContent.module.css';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 useNavigate 사용
 
-const DeploymentCompleteContent = () => {
-  const navigate = useNavigate(); // 페이지 이동 훅 사용
-
-  // 홈으로 이동 핸들러
-  const handleHomeClick = () => {
-    navigate('/'); // 홈 경로로 이동 (필요에 따라 변경)
-  };
-
-  // 업데이트 현황으로 이동 핸들러
-  const handleUpdateStatusClick = () => {
-    navigate('/update-status'); // 업데이트 현황 경로로 이동 (필요에 따라 변경)
-  };
+const DeploymentCompleteContent = ({ onHomeClick, onUpdateStatusClick }) => {
 
   return (
     <div className={styles.container}>
@@ -25,12 +14,12 @@ const DeploymentCompleteContent = () => {
       {/* 오른쪽 섹션: 내비게이션 버튼 */}
       <div className={styles.navigationSection}>
         {/* 홈으로 버튼 */}
-        <button className={styles.navButton} onClick={handleHomeClick}>
+        <button className={styles.navButton} onClick={onHomeClick}>
           <span className={styles.buttonText}>홈으로</span>
           <span className={styles.arrow}>→</span>
         </button>
         {/* 업데이트 현황 버튼 */}
-        <button className={styles.navButton} onClick={handleUpdateStatusClick}>
+        <button className={styles.navButton} onClick={onUpdateStatusClick}>
           <span className={styles.buttonText}>업데이트 현황</span>
           <span className={styles.arrow}>→</span>
         </button>
