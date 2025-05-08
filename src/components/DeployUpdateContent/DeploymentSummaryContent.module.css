@@ -1,291 +1,198 @@
 /* src/components/DeploymentSummary/DeploymentSummaryContent.module.css */
 
 .container {
-  /* 컴포넌트 전체 컨테이너 스타일 */
-  /* 배경은 부모 요소에서 채워집니다. */
   width: 100%;
-  /* 부모 요소의 전체 너비 차지 또는 필요시 고정 너비 */
   padding: 20px;
-  /* 내부 여백 */
   box-sizing: border-box;
-  /* 패딩을 너비에 포함 */
   color: white;
-  /* 기본 텍스트 색상 */
   font-family: sans-serif;
-  /* 예시 폰트 (Orbitron은 특정 요소에 적용) */
-
-  /* 2단 레이아웃을 위한 Flexbox 설정 */
   display: flex;
-  /* Flexbox 활성화 */
   flex-direction: row;
-  /* 자식 요소들을 가로 방향으로 배치 (기본값이나 명시) */
   gap: 40px;
-  /* 컬럼들 사이의 간격 */
   flex-grow: 1;
-  /* 부모 공간이 허용하는 한 컨테이너가 늘어나도록 함 */
   min-height: 0;
-  /* Flex 아이템의 스크롤이 올바르게 작동하도록 할 수 있습니다. */
   height: 100%;
-  /* 부모 높이를 채우도록 설정 (필요시) */
 }
 
 .leftColumn {
-  /* 정보 섹션들을 담는 왼쪽 컬럼 컨테이너 */
   flex: 1;
-  /* 사용 가능한 공간을 균등하게 나누도록 설정 (대략 50%) */
   display: flex;
-  /* 섹션들을 세로로 배치하기 위해 내부적으로 Flexbox 사용 */
   flex-direction: column;
-  /* 섹션들을 세로 방향으로 배치 */
   overflow-y: auto;
-  /* 내용이 넘칠 경우 스크롤바 표시 */
   max-height: 100%;
-  /* 부모 높이 내에서 스크롤되도록 최대 높이 설정 */
   min-width: 0;
-  /* 공간 부족 시 컬럼이 줄어들도록 허용 */
-  /* background-color: rgba(255, 0, 0, 0.1); /* 레이아웃 확인용 */
   padding-left: 5%;
 }
 
 .rightColumn {
-  /* Deploy 버튼을 담는 오른쪽 컬럼 컨테이너 */
   flex: 1;
-  /* 사용 가능한 공간을 균등하게 나누도록 설정 (대략 50%) */
   display: flex;
-  /* 버튼 컨테이너와 체크박스 영역을 세로로 배치하고 가운데 정렬하기 위해 Flexbox 사용 */
   flex-direction: column;
-  /* 자식 요소들을 세로 방향으로 배치 */
   justify-content: center;
-  /* 세로축(주축) 가운데 정렬 */
   align-items: center;
-  /* 가로축(교차축) 가운데 정렬 */
   min-width: 0;
-  /* 공간 부족 시 컬럼이 줄어들도록 허용 */
-  /* background-color: rgba(0, 0, 255, 0.1); /* 레이아웃 확인용 */
 }
 
-/* --- 기존 스타일들은 필요에 따라 유지하거나 조정합니다 --- */
-
 .section {
-  /* 각 정보 섹션 (파일 정보, 업데이트 상세, 정책 조건) 컨테이너 */
   margin-bottom: 20px;
-  /* 섹션 아래 간격 */
 }
 
 .sectionTitle {
   font-size: 1.7rem;
-  /* 섹션 제목 글자 크기 */
   font-family: 'Orbitron', sans-serif;
-  /* Orbitron 폰트 적용 */
   color: white;
-  /* 흰색 글자색 */
   margin-bottom: 10px;
-  /* 제목 아래 간격 */
 }
 
 .infoRow {
-  /* 파일 정보, 업데이트 상세 등의 개별 정보 행 */
   display: flex;
-  /* 라벨과 값을 가로로 배치 */
   align-items: baseline;
-  /* 텍스트 기준선 정렬 */
   margin-bottom: 8px;
-  /* 정보 행들 사이 간격 */
   flex-wrap: wrap;
-  /* 공간 부족 시 다음 줄로 넘김 */
 }
 
 .infoLabel {
-  /* 정보 항목 라벨 (예: File Name:, Price:) */
   font-weight: bold;
-  /* 글자 굵게 */
   margin-right: 10px;
-  /* 라벨과 값 사이 간격 */
   font-size: 1rem;
-  /* 글자 크기 */
   color: #ccc;
-  /* 연한 회색 라벨 색상 */
   font-family: 'Orbitron', sans-serif;
-  /* Orbitron 폰트 적용 */
   flex-shrink: 0;
-  /* 공간 부족 시 라벨이 줄어들지 않도록 함 */
-  /* width: 150px; /* 라벨 너비를 고정하여 값의 시작점 정렬 */
 }
 
 .infoValue {
-  /* 정보 항목 값 (예: uploaded_file.zip, 1,000,000 ETH) */
   font-size: 1rem;
-  /* 글자 크기 */
   color: white;
-  /* 흰색 글자색 */
   word-break: break-all;
-  /* 긴 단어가 넘칠 경우 줄 바꿈 */
   flex-grow: 1;
-  /* 남은 공간을 채우도록 허용 */
 }
 
 .descriptionValue {
-  /* 업데이트 설명 값 (여러 줄 입력 고려) */
   font-size: 1rem;
   color: white;
   word-break: break-all;
   white-space: pre-wrap;
-  /* 원본 줄 바꿈 유지 */
-  /* margin-left는 infoRow 내부에서 flex로 배치되므로 필요 없습니다. */
   flex-grow: 1;
-  /* 남은 공간을 채우도록 허용 */
 }
-
 
 .dividingLine {
-  /* 섹션들을 구분하는 가로선 */
   width: 100%;
-  /* 전체 너비 (부모 컬럼 기준) */
   height: 3px;
-  /* 선 두께 */
   background-color: white;
-  /* 연한 하얀색 선 */
   margin: 20px 0;
-  /* 위아래 간격 */
-  /* 이 선은 왼쪽 컬럼 안에 있으므로 왼쪽 컬럼 너비에 맞게 그려집니다. */
 }
 
-/* 정책 조건 섹션 스타일 */
 .policyConditions {
-  /* 정책 조건 목록 전체 컨테이너 */
-  /* 특별한 레이아웃 스타일은 필요 없습니다. */
 }
 
 .policyType {
-  /* 각 정책 유형 (모델명:, 일련번호: ...) 행 */
   display: flex;
-  /* 라벨, 구분자, 값 리스트를 가로로 배치 */
   align-items: baseline;
-  /* 텍스트 기준선 정렬 */
   margin-bottom: 8px;
-  /* 정책 유형 행들 사이 간격 */
   flex-wrap: wrap;
-  /* 공간 부족 시 다음 줄로 넘김 */
 }
 
 .policyLabel {
-  /* 정책 유형 라벨 (예: 모델명:, 일련번호:) */
   font-weight: bold;
   margin-right: 5px;
-  /* 라벨과 구분자 사이 간격 */
   font-size: 1rem;
   color: #ccc;
-  /* 라벨 색상 */
   font-family: 'Orbitron', sans-serif;
   flex-shrink: 0;
-  /* 공간 부족 시 줄어들지 않도록 함 */
-  /* width: 150px; /* 라벨 너비를 고정하여 값의 시작점 정렬 */
 }
 
 .policySeparator {
-  /* 라벨과 값 리스트 사이 구분자 (:) */
   margin-right: 5px;
-  /* 구분자와 값 리스트 사이 간격 */
   color: #ccc;
   flex-shrink: 0;
-  /* 공간 부족 시 줄어들지 않도록 함 */
 }
 
 .policyValues {
-  /* 해당 정책 유형의 값 리스트 컨테이너 */
   display: flex;
-  /* 값들을 가로로 배치 */
   flex-wrap: wrap;
-  /* 공간 부족 시 다음 줄로 넘김 */
   font-size: 1rem;
   color: white;
   word-break: break-all;
   flex-grow: 1;
-  /* 남은 공간을 채우도록 허용 */
 }
 
 .policyValueItem {
-  /* 정책 값 리스트의 개별 항목 */
-  /* 값들 사이의 쉼표는 JS에서 추가 */
-  /* margin-right: 5px; /* 값 항목들 사이 간격 */
 }
 
-
 .buttonContainer {
-  /* 배포 버튼을 담는 컨테이너 */
-  /* .rightColumn (Flex 컨테이너) 내에서 가운데 정렬됩니다. */
-  /* 오른쪽 컬럼 상단과의 간격 (필요시 조정) */
-  /* width: 200px; /* 버튼 컨테이너 너비 고정 */
   padding-bottom: 10%;
-  /* 버튼 아래 여백 */
 }
 
 .deployButton {
-  /* 배포 버튼 스타일 */
   background-color: transparent;
-  /* 배경 투명 */
   color: white;
-  /* 글자색 하얀색 */
   border: 2px solid white;
-  /* 하얀색 테두리 */
   padding: 20px 20px;
-  /* 내부 여백 */
   font-size: 3.2rem;
-  /* 글자 크기 */
   font-family: 'Orbitron', sans-serif;
-  /* Orbitron 폰트 */
   cursor: pointer;
-  /* 클릭 가능한 요소 표시 */
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  /* transition에 box-shadow 추가 */
-  /* 호버 시 부드러운 전환 효과 */
   display: block;
-  /* 버튼을 블록 요소로 만들어 width/margin 적용 용이 */
   margin: 0 auto;
-  /* buttonContainer가 center 정렬되지 않았다면 여기서 가로 가운데 정렬 */
   margin-bottom: 3rem;
-  /* 버튼 아래 경고 텍스트와의 간격 */
-
-  /* 하얀색 박스 그림자 추가 */
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-  /* 가로/세로 오프셋 0, 블러 15px, 투명도 70%의 하얀색 그림자 */
-  /* 필요에 따라 그림자 설정을 조정하세요 (예: 0 0 10px white) */
 }
 
 .deployButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  /* 호버 시 연한 배경색 */
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 35px rgba(255, 255, 255, 0.6);
-  /* 호버 시 그림자를 좀 더 강조 */
 }
 
-/* 체크박스 및 설명 영역 스타일 */
 .skipDetails {
-  /* <-- 새로운 컨테이너 스타일 */
   display: flex;
-  /* 체크박스와 라벨을 가로로 배치 */
   align-items: center;
-  /* 세로 가운데 정렬 */
   margin-top: 20px;
-  /* 버튼 영역과의 간격 */
   font-size: 1rem;
   color: white;
 }
 
 .skipCheckbox {
-  /* <-- 체크박스 스타일 */
   margin-right: 10px;
-  /* 체크박스와 라벨 사이 간격 */
-  /* 필요에 따라 체크박스 크기 등 추가 스타일링 */
   width: 20px;
-  /* 예시 크기 */
   height: 20px;
-  /* 예시 크기 */
   cursor: pointer;
 }
 
 .skipLabel {
-  /* <-- 라벨 스타일 */
   cursor: pointer;
-  /* 클릭 가능한 요소 표시 */
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  font-family: 'Orbitron', sans-serif;
+  color: white;
+  animation: blink 1s infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
 }

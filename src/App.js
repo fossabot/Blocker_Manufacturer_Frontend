@@ -52,29 +52,32 @@ function App() {
     }));
   }, []);
 
-  const handleDeploy = useCallback(async () => {
+  const handleDeploy = useCallback(async (skipDetails, setIsDeploying) => {
     console.log("App.js: Deploy button clicked with final data:", deploymentData);
+    console.log("Skip Details:", skipDetails);
     console.log("API Base URL:", process.env.REACT_APP_API_BASE_URL);
 
-    // 데이터 유효성 검사
     if (!deploymentData.uploadedFile) {
       alert('업로드된 파일이 없습니다.');
+      setIsDeploying(false);
       return;
     }
     if (!deploymentData.updateName) {
       alert('버전 이름이 필요합니다.');
+      setIsDeploying(false);
       return;
     }
     if (!deploymentData.description) {
       alert('설명이 필요합니다.');
+      setIsDeploying(false);
       return;
     }
     if (!deploymentData.price) {
       alert('가격이 필요합니다.');
+      setIsDeploying(false);
       return;
     }
 
-    // policy를 서버 기대 형식으로 설정
     const policy = {
       model: deploymentData.policyConditions.modelName.length > 0 ? deploymentData.policyConditions.modelName.join(' OR ') : '',
       serial: deploymentData.policyConditions.serialNumber.length > 0 ? deploymentData.policyConditions.serialNumber.join(' OR ') : '',
@@ -83,7 +86,6 @@ function App() {
     };
     const policyString = JSON.stringify(policy);
 
-    // 전송 데이터 로그
     console.log("Request Data:", {
       file: {
         name: deploymentData.uploadedFile?.name,
@@ -104,7 +106,6 @@ function App() {
       formData.append('price', deploymentData.price);
       formData.append('policy', policyString);
 
-      // FormData 내용 로그 출력
       console.log("FormData Contents:");
       for (let [key, value] of formData.entries()) {
         console.log(`  ${key}: ${value}`);
@@ -120,8 +121,8 @@ function App() {
 
       console.log('Deployment successful:', response.data);
       alert('배포가 완료되었습니다!');
+      setIsDeploying(false);
 
-      // 상태 초기화
       setDeploymentData({
         uploadedFileName: null,
         uploadedFile: null,
@@ -136,13 +137,13 @@ function App() {
         },
       });
 
-      // 배포 완료 페이지로 이동
       navigate('/complete');
     } catch (error) {
       console.error('Deployment failed:', error);
       console.log('Server error response:', error.response?.data);
       const errorMessage = error.response?.data?.message || error.message;
       alert(`배포 중 오류가 발생했습니다: ${errorMessage}`);
+      setIsDeploying(false);
     }
   }, [deploymentData, navigate]);
 
