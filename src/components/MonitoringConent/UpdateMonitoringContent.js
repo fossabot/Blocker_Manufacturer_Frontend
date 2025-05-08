@@ -1,106 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from './UpdateMonitoringContent.module.css';
 
-function UpdateMonitoring({ onClose }) {
+function UpdateMonitoringContent({ onClose }) {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchItems = async () => {
-  //     const response = await fetch('/api/items');
-  //     const data = await response.json();
-  //     setItems(data.items || []);
-  //     setTotalPages(Math.max(1, Math.ceil((data.items || []).length / 2)));
-  //   };
-  //   fetchItems();
-  // }, []);
-
-  // 임시로 데이터 가져오기
   useEffect(() => {
     const fetchItems = async () => {
-      // 임시 데이터: 이미지에서 가져온 두 개의 업데이트 현황
-      const tempData = [
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'LX2.PE.KOR.S.sdasdasdaasdsadsdsdadassasd..',
-          fuelType: '79,531.92 GAS',
-          ipfsNode: '192.168.1.100:8333',
-          ipfsCid: 'ip4/104.236.176.4....',
-          mileage: '100,000번',
-        },
-        {
-          model: 'VI15MY.KOR.S....',
-          fuelType: '122,902.01 GAS',
-          ipfsNode: '192.168.1.021:8334',
-          ipfsCid: 'ip4/104.236.867.2....',
-          mileage: '50,000번',
-        },
-      ];
-      setItems(tempData);
-      setTotalPages(Math.max(1, Math.ceil(tempData.length / 5)));
+      setIsLoading(true);
+      setError(null);
+
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+      if (!apiBaseUrl) {
+        setError('API URL이 설정되지 않았습니다. 환경 변수를 확인해주세요.');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${apiBaseUrl}/api/manufacturer/updates`, {
+          headers: {
+            'accept': 'application/json',
+          },
+        });
+        const data = response.data.updates || [];
+        setItems(data);
+        setTotalPages(Math.max(1, Math.ceil(data.length / 5)));
+      } catch (err) {
+        console.error('Failed to fetch updates:', err);
+        setError('업데이트 목록을 불러오지 못했습니다. 나중에 다시 시도해주세요.');
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchItems();
   }, []);
@@ -118,35 +53,47 @@ function UpdateMonitoring({ onClose }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <span>업데이트 명</span>
-        <span>GAS 소모량</span>
-        <span>스마트 컨트랙트 노드</span>
-        <span>IPFS CID</span>
-        <span>결제 현황</span>
-      </div>
-      <hr className={styles.divider} />
-      <div className={styles.itemList}>
-        {displayItems.map((item, index) => (
-          <div key={index} className={styles.item}>
-            <div className={styles.itemDetails}>
-              <span>{item.model || '-'}</span>
-              <span>{item.fuelType || '-'}</span>
-              <span>{item.ipfsNode || '-'}</span>
-              <span>{item.ipfsCid || '-'}</span>
-              <span>{item.mileage || '-'}</span>
-            </div>
+      {isLoading ? (
+        <div className={styles.loading}>로딩 중...</div>
+      ) : error ? (
+        <div className={styles.error}>{error}</div>
+      ) : (
+        <>
+          <div className={styles.header}>
+            <span>업데이트 명</span>
+            <span>IPFS 해시</span>
+            <span>설명</span>
+            <span>가격</span>
+            <span>버전</span>
           </div>
-        ))}
-      </div>
-      <hr className={styles.divider} />
-      <div className={styles.pagination}>
-        <button className={styles.arrow} onClick={handlePrev}>←</button>
-        <span className={styles.pageInfo}>{currentPage + 1}/{totalPages}</span>
-        <button className={styles.arrow} onClick={handleNext}>→</button>
-      </div>
+          <hr className={styles.divider} />
+          <div className={styles.itemList}>
+            {displayItems.map((item, index) => (
+              <div key={index} className={styles.item}>
+                <div className={styles.itemDetails}>
+                  <span>{item.uid || '-'}</span>
+                  <span>{item.ipfs_hash || '-'}</span>
+                  <span>{item.description || '-'}</span>
+                  <span>{item.price ? `${item.price} ETH` : '-'}</span>
+                  <span>{item.version || '-'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <hr className={styles.divider} />
+          <div className={styles.pagination}>
+            <button className={styles.arrow} onClick={handlePrev} disabled={currentPage === 0}>
+              ←
+            </button>
+            <span className={styles.pageInfo}>{currentPage + 1}/{totalPages}</span>
+            <button className={styles.arrow} onClick={handleNext} disabled={currentPage >= totalPages - 1}>
+              →
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-export default UpdateMonitoring;
+export default UpdateMonitoringContent;
