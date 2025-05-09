@@ -1,6 +1,6 @@
 # Blocker Manufacturer Frontend
 
-## 📂 프로젝트 구조 (2025.05.02 기준)
+## 📂 프로젝트 구조
 
 ```
 Blocker_Manufacturer_Frontend/
