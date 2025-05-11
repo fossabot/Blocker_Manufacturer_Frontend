@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'; // FBXLoader 임포트
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'; // GLTFLoader 임포트
 
 const EncryptionVisualizationScene = () => {
   const containerRef = useRef(null);
@@ -48,21 +48,37 @@ const EncryptionVisualizationScene = () => {
     directionalLight.position.set(0, 100, 0);
     sceneRef.current.add(directionalLight);
 
-    // FBX 로더
-    const fbxLoader = new FBXLoader();
-    fbxLoader.load(
-      '/resources/models/MOSCOW TEST.FBX', // 여기에 FBX 파일 경로를 입력하세요
-      (object) => {
+    // GLTF 로더
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load(
+      '/resources/models/city_test.glb', // GLB 파일 경로
+      (gltf) => {
         if (!isMounted.current) return;
 
-        console.log('Loaded FBX Object:', object);
+        console.log('Loaded GLB Object:', gltf);
 
-        // 모델 스케일 조정 (필요에 따라 조절)
-        object.scale.set(0.001, 0.001, 0.001);
+        const model = gltf.scene; // 로드된 GLTF 씬
+        model.scale.set(0.001, 0.001, 0.001); // 필요에 따라 스케일 조정
 
-        sceneRef.current.add(object);
+        // 모든 메쉬의 재질 색상을 하얀색으로 변경
+        const whiteColor = new THREE.Color(0xffffff);
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh && child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach(material => {
+                if (material.color) {
+                  material.color.set(whiteColor);
+                }
+              });
+            } else if (child.material.color) {
+              child.material.color.set(whiteColor);
+            }
+          }
+        });
 
-        const box = new THREE.Box3().setFromObject(object);
+        sceneRef.current.add(model);
+
+        const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         cameraRef.current.position.copy(center).add(new THREE.Vector3(0, 50, 100));
         controlsRef.current.target.copy(center);
@@ -72,11 +88,11 @@ const EncryptionVisualizationScene = () => {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
       },
       (error) => {
-        console.error('FBX load error:', error);
+        console.error('GLTF load error:', error);
       }
     );
 
-    // 애니메이션 루프
+    // 애니메이션 루프 (GLTF에 애니메이션이 있다면 여기서 처리)
     const animate = () => {
       if (!isMounted.current) return;
       animationFrameId.current = requestAnimationFrame(animate);
