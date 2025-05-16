@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'; // GLTFLoader 임포트
 
 // 저장해둔 초기 카메라 위치
-const initialCameraPosition = { x: 82.12719941938396, y: 38.76360863760963, z: -52.008197438481346 };
+const initialCameraPosition = { x: -10, y: -50, z: -10 };
 
 const NUM_SIGNALS = 20; // 생성할 전기 신호 개수 (큐브/구 각각 10개)
 const SIGNAL_SPEED = 1;
@@ -36,6 +36,18 @@ const EncryptionVisualizationScene = () => {
     // Scene setup
     sceneRef.current.background = new THREE.Color(0x111111); // 짙은 회색
 
+    // 축 헬퍼 추가 (길이 10000, 음수/양수 모두 표시됨)
+    const axesHelper = new THREE.AxesHelper(10000);
+    axesHelper.position.set(0, 0, 0); // 원점에 위치
+    sceneRef.current.add(axesHelper);
+
+    // 원점에 세로로 긴 직육면체(건물) 추가
+    const buildingGeometry = new THREE.BoxGeometry(10, 50, 10); // (width, height, depth)
+    const buildingMaterial = new THREE.MeshPhongMaterial({ color: 0x3399ff });
+    const buildingMesh = new THREE.Mesh(buildingGeometry, buildingMaterial);
+    buildingMesh.position.set(0, -30, 0); // 바닥이 y=0에 오도록 y=height/2
+    sceneRef.current.add(buildingMesh);
+
     // Renderer 설정
     rendererRef.current = new THREE.WebGLRenderer({
       antialias: true,
@@ -59,9 +71,11 @@ const EncryptionVisualizationScene = () => {
       initialCameraPosition.y,
       initialCameraPosition.z
     );
-
     controlsRef.current = new OrbitControls(cameraRef.current, currentRenderer.domElement);
     controlsRef.current.enableDamping = true;
+    // 초기 카메라 시선 방향 지정 (예: (100, 100, 100) 방향)
+    controlsRef.current.target.set(1, 1, 1);
+    cameraRef.current.lookAt(0, 0, 0);
 
     // 조명 설정
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -100,11 +114,12 @@ const EncryptionVisualizationScene = () => {
 
         sceneRef.current.add(model);
 
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        cameraRef.current.position.copy(center).add(new THREE.Vector3(0, 50, 100));
-        controlsRef.current.target.copy(center);
-        cameraRef.current.lookAt(center);
+        // 아래 코드(카메라 위치 덮어쓰기)를 제거하거나 주석 처리
+        // const box = new THREE.Box3().setFromObject(model);
+        // const center = box.getCenter(new THREE.Vector3());
+        // cameraRef.current.position.copy(center).add(new THREE.Vector3(0, 50, 100));
+        // controlsRef.current.target.copy(center);
+        // cameraRef.current.lookAt(center);
       },
       (xhr) => {
         console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
