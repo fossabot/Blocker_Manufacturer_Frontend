@@ -36,10 +36,14 @@ const EncryptionVisualizationScene = () => {
   const [showUploadComplete, setShowUploadComplete] = useState(false);
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const [isAbeAnimating, setIsAbeAnimating] = useState(false);
+  const [isAbeMovingToOrigin, setIsAbeMovingToOrigin] = useState(false);
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
+
+  // policy 모델 등장 완료 후에만 이동 애니메이션을 시작하도록 상태 추가
+  const [isPolicyFullyVisible, setIsPolicyFullyVisible] = useState(false);
 
   // keycard 생성 및 애니메이션 함수
   const handleUploadClick = () => {
@@ -250,6 +254,9 @@ const EncryptionVisualizationScene = () => {
         policyRef.current.scale.set(scale, scale, scale);
         if (progress < 1) {
           frameId = requestAnimationFrame(animateAppear);
+        } else {
+          // policy 모델이 완전히 나타난 후 상태 변경
+          setIsPolicyFullyVisible(true);
         }
       };
       frameId = requestAnimationFrame(animateAppear);
@@ -259,6 +266,7 @@ const EncryptionVisualizationScene = () => {
   return () => {
     clearTimeout(timeoutId);
     if (frameId) cancelAnimationFrame(frameId);
+    setIsPolicyFullyVisible(false);
     // ❗️문제의 원인: 아래 코드가 항상 실행됨
     // if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
     //   sceneRef.current.remove(modelObj);
@@ -769,6 +777,8 @@ const EncryptionVisualizationScene = () => {
     setIsMovingToOrigin(false);
     setIsCubeVisible(false);
     setIsClusterMoving(false);
+    setIsAbeMovingToOrigin(false);
+    setIsPolicyFullyVisible(false);
 
     // 키카드, 파일, 큐브, policy 모델 제거
     if (keycardRef.current && sceneRef.current) {
@@ -793,17 +803,63 @@ const EncryptionVisualizationScene = () => {
     const zoomTarget = { x: 0, y: 0, z: 0 };
     animateCameraTo(zoomPosition, zoomTarget, 800);
 
-    // 2. 약간의 딜레이 후 키카드만 등장
+    // 2. 약간의 딜레이 후 키카드 등장
     setTimeout(() => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
-      // policy는 위 useEffect에서 자동 등장
-      // 버튼 다시 활성화(정확히는 policy 애니메이션 끝나고 활성화해도 됨)
-      setTimeout(() => {
-        setIsAbeAnimating(false);
-      }, 2000); // 키카드 1초 + policy 1초 후
+      // policy는 useEffect에서 자동 등장
+      // 이동 애니메이션은 policy가 완전히 나타난 후에 실행됨
     }, 800);
   };
+
+  // CP-ABE 키카드+policy 원점 이동 애니메이션
+  useEffect(() => {
+    if (!isAbeMovingToOrigin) return;
+    let frameId;
+    const moveDuration = 1000; // 1초
+    let startTime = null;
+
+    // 시작 위치 저장
+    const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
+    const policyStart = policyRef.current ? policyRef.current.position.clone() : null;
+    // 이동 목표 위치
+    const keycardTarget = new THREE.Vector3(-2, 0, 0); // 원점 왼쪽
+    const policyTarget = new THREE.Vector3(2, -2, 0);   // 원점 오른쪽
+
+    const animateMove = (timestamp) => {
+      if (!isMounted.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / moveDuration, 1);
+
+      if (keycardRef.current && keycardStart) {
+        keycardRef.current.position.lerpVectors(keycardStart, keycardTarget, t);
+      }
+      if (policyRef.current && policyStart) {
+        policyRef.current.position.lerpVectors(policyStart, policyTarget, t);
+      }
+
+      if (t < 1) {
+        frameId = requestAnimationFrame(animateMove);
+      }
+    };
+    frameId = requestAnimationFrame(animateMove);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [isAbeMovingToOrigin]);
+
+  // policy가 완전히 나타난 후에만 이동 애니메이션 시작
+  useEffect(() => {
+    if (!isPolicyFullyVisible) return;
+    // 약간의 추가 딜레이 후 이동
+    const delay = 200;
+    const timeout = setTimeout(() => {
+      setIsAbeMovingToOrigin(true);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [isPolicyFullyVisible]);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
