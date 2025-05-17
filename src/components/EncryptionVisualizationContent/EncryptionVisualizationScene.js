@@ -9,6 +9,9 @@ const initialTarget = { x: 100, y: 30, z: 50 };
 
 const CAMERA_ANIMATION_DURATION = 1000; // ms
 
+// === 딜레이 상수 한 곳에서 관리 ===
+const ANIMATION_DELAY = 3000; // ms, 모든 단계 사이 딜레이
+
 const EncryptionVisualizationScene = () => {
   const containerRef = useRef(null);
   const sceneRef = useRef(new THREE.Scene());
@@ -97,11 +100,11 @@ const EncryptionVisualizationScene = () => {
 
             setTimeout(() => {
               setIsClusterMoving(true);
-            }, 1000 + 300); // 큐브 등장 1초 + 0.3초 딜레이
-          }, 1000 + 300); // 이동 1초 + 0.3초 딜레이
-        }, 1000 + 300); // file 등장 1초 + 0.3초 딜레이
-      }, 1000 + 300); // keycard 등장 1초 + 0.3초 딜레이
-    }, 800);
+            }, ANIMATION_DELAY); // 큐브 등장 후 클러스터 이동 딜레이
+          }, ANIMATION_DELAY); // 원점 이동 후 큐브 등장 딜레이
+        }, ANIMATION_DELAY); // 파일 등장 후 원점 이동 딜레이
+      }, ANIMATION_DELAY); // 키카드 등장 후 파일 등장 딜레이
+    }, ANIMATION_DELAY);
   };
 
   // keycard 모델 생성 및 애니메이션
@@ -238,6 +241,8 @@ const EncryptionVisualizationScene = () => {
   let frameId;
   let modelObj = null;
   const loader = new GLTFLoader();
+  // 정책 모델 등장 딜레이를 상수로 관리
+  const policyAppearDelay = ANIMATION_DELAY;
   const timeoutId = setTimeout(() => {
     loader.load('/resources/models/policy.glb', (gltf) => {
       if (!isMounted.current) return;
@@ -266,7 +271,7 @@ const EncryptionVisualizationScene = () => {
       };
       frameId = requestAnimationFrame(animateAppear);
     });
-  }, 1000);
+  }, policyAppearDelay);
 
   return () => {
     clearTimeout(timeoutId);
@@ -814,17 +819,16 @@ const EncryptionVisualizationScene = () => {
       setKeycardAppearProgress(0);
       // policy는 useEffect에서 자동 등장
       // 이동 애니메이션은 policy가 완전히 나타난 후에 실행됨
-    }, 800);
+    }, ANIMATION_DELAY);
   };
 
   // policy가 완전히 나타난 후에만 이동 애니메이션 시작
   useEffect(() => {
     if (!isPolicyFullyVisible) return;
-    // 약간의 추가 딜레이 후 이동
-    const delay = 200;
+    // 딜레이를 상수로 관리
     const timeout = setTimeout(() => {
       setIsAbeMovingToOrigin(true);
-    }, delay);
+    }, ANIMATION_DELAY);
     return () => clearTimeout(timeout);
   }, [isPolicyFullyVisible]);
 
@@ -862,10 +866,11 @@ const EncryptionVisualizationScene = () => {
         setTimeout(() => {
           setIsCubeVisible(true);
           // 큐브 등장 후 그룹 이동 애니메이션 시작
+          // 클러스터 이동 딜레이를 상수로 관리
           setTimeout(() => {
             setIsAbeGroupMoving(true);
-          }, 1000); // 큐브 등장 애니메이션 1초 후
-        }, 200); // 0.2초 딜레이
+          }, ANIMATION_DELAY);
+        }, ANIMATION_DELAY); // 큐브 등장 딜레이도 상수로 관리
       }
     };
     frameId = requestAnimationFrame(animateMove);
@@ -982,6 +987,45 @@ const EncryptionVisualizationScene = () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
   }, [isAbeGroupMoving]);
+
+  // === 반투명 구 추가 ===
+  useEffect(() => {
+    if (!sceneRef.current) return;
+
+    // 첫 번째 구: (220, 120, 120)
+    const sphere1Geometry = new THREE.SphereGeometry(50, 48, 48);
+    const sphere1Material = new THREE.MeshBasicMaterial({
+      color: 0x00bfff, // 하늘색 계열
+      transparent: true,
+      opacity: 0.25,
+      depthWrite: false,
+    });
+    const sphere1 = new THREE.Mesh(sphere1Geometry, sphere1Material);
+    sphere1.position.set(220, 120, 120);
+    sceneRef.current.add(sphere1);
+
+    // 두 번째 구: (220, 120, 10)
+    const sphere2Geometry = new THREE.SphereGeometry(50, 48, 48);
+    const sphere2Material = new THREE.MeshBasicMaterial({
+      color: 0xffa500, // 주황색 계열
+      transparent: true,
+      opacity: 0.25,
+      depthWrite: false,
+    });
+    const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
+    sphere2.position.set(220, 120, 10);
+    sceneRef.current.add(sphere2);
+
+    // 클린업
+    return () => {
+      sceneRef.current.remove(sphere1);
+      sceneRef.current.remove(sphere2);
+      sphere1.geometry.dispose();
+      sphere1.material.dispose();
+      sphere2.geometry.dispose();
+      sphere2.material.dispose();
+    };
+  }, []);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
