@@ -29,6 +29,8 @@ const EncryptionVisualizationScene = () => {
   const [isKeycardVisible, setIsKeycardVisible] = useState(false);
   const [isFileVisible, setIsFileVisible] = useState(false);
   const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
+  const [isCubeVisible, setIsCubeVisible] = useState(false);
+  const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
@@ -54,8 +56,13 @@ const EncryptionVisualizationScene = () => {
         // file 등장 후 약간의 딜레이 후 이동 애니메이션 시작
         setTimeout(() => {
           setIsMovingToOrigin(true);
-        }, 1000 + 300); // file 등장 애니메이션(1초) + 0.3초 추가 딜레이
-      }, 1000 + 300); // 키카드 애니메이션(1초) + 0.3초 추가 딜레이
+
+          // 이동 애니메이션이 끝난 뒤(1초 후) 큐브 등장
+          setTimeout(() => {
+            setIsCubeVisible(true);
+          }, 1000 + 300); // 이동 1초 + 0.3초 딜레이
+        }, 1000 + 300); // file 등장 1초 + 0.3초 딜레이
+      }, 1000 + 300); // keycard 등장 1초 + 0.3초 딜레이
     }, 800);
   };
 
@@ -143,6 +150,48 @@ const EncryptionVisualizationScene = () => {
     fileRef.current = null;
   };
 }, [isFileVisible]);
+
+  // 큐브 모델 생성 및 애니메이션
+  useEffect(() => {
+  if (!isCubeVisible) return;
+  let frameId;
+  let modelObj = null;
+  const loader = new GLTFLoader();
+  loader.load('/resources/models/cube.glb', (gltf) => {
+    if (!isMounted.current) return;
+    modelObj = gltf.scene;
+    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
+    modelObj.position.set(0, 0, 0); // 원점
+    sceneRef.current.add(modelObj);
+    cubeRef.current = modelObj;
+
+    // 시간 기반 애니메이션
+    const duration = 1000; // 1초 동안 애니메이션
+    let startTime = null;
+
+    const animateAppear = (timestamp) => {
+      if (!isMounted.current || !cubeRef.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
+      const scale = 0.2 * progress; // 스케일 0에서 0.3으로
+      cubeRef.current.scale.set(scale, scale, scale);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animateAppear);
+      }
+    };
+    frameId = requestAnimationFrame(animateAppear);
+  });
+
+  return () => {
+    if (frameId) cancelAnimationFrame(frameId);
+    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+      sceneRef.current.remove(modelObj);
+    }
+    cubeRef.current = null;
+  };
+}, [isCubeVisible]);
 
   // 카메라 애니메이션 함수
   const animateCameraTo = (toPosition, toTarget, duration = CAMERA_ANIMATION_DURATION) => {
