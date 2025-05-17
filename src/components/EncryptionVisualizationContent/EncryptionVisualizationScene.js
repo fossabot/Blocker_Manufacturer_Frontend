@@ -25,14 +25,16 @@ const EncryptionVisualizationScene = () => {
   const signalRefs = useRef([]);
   const cameraAnimationRef = useRef(null);
   const keycardRef = useRef(null);
+  const fileRef = useRef(null);
   const [isKeycardVisible, setIsKeycardVisible] = useState(false);
+  const [isFileVisible, setIsFileVisible] = useState(false);
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
 
   // keycard 생성 및 애니메이션 함수
   const handleUploadClick = () => {
-    if (keycardRef.current) return; // 이미 있으면 중복 생성 방지
+    if (keycardRef.current || fileRef.current) return; // 중복 방지
 
     // 1. 카메라를 줌인할 위치/타겟 지정 (예시: 원점 근처로 이동)
     const zoomPosition = { x: -20, y: 0, z: -10 };
@@ -45,6 +47,11 @@ const EncryptionVisualizationScene = () => {
     setTimeout(() => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
+
+      // 4. 키카드가 다 나타난 뒤 file 생성 (추가 딜레이)
+      setTimeout(() => {
+        setIsFileVisible(true);
+      }, 1000 + 300); // 키카드 애니메이션(1초) + 0.3초 추가 딜레이
     }, 800);
   };
 
@@ -58,7 +65,7 @@ const EncryptionVisualizationScene = () => {
     if (!isMounted.current) return;
     modelObj = gltf.scene;
     modelObj.scale.set(0, 0, 0); // 초기 스케일 0
-    modelObj.position.set(0, 0, -10);
+    modelObj.position.set(0, 0, -5);
     sceneRef.current.add(modelObj);
     keycardRef.current = modelObj;
 
@@ -89,6 +96,49 @@ const EncryptionVisualizationScene = () => {
     keycardRef.current = null;
   };
 }, [isKeycardVisible]);
+
+  // file 모델 생성 및 애니메이션
+  useEffect(() => {
+  if (!isFileVisible) return;
+  let frameId;
+  let modelObj = null;
+  const loader = new GLTFLoader();
+  loader.load('/resources/models/file.glb', (gltf) => {
+    if (!isMounted.current) return;
+    modelObj = gltf.scene;
+    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
+    modelObj.position.set(0, -1, 5);
+    modelObj.rotateY(Math.PI / 2 * -1)
+    sceneRef.current.add(modelObj);
+    fileRef.current = modelObj;
+
+    // 시간 기반 애니메이션
+    const duration = 1000; // 1초 동안 애니메이션
+    let startTime = null;
+
+    const animateAppear = (timestamp) => {
+      if (!isMounted.current || !fileRef.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
+      const scale = 0.03 * progress; // 스케일 0에서 0.05로
+      fileRef.current.scale.set(scale, scale, scale);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animateAppear);
+      }
+    };
+    frameId = requestAnimationFrame(animateAppear);
+  });
+
+  return () => {
+    if (frameId) cancelAnimationFrame(frameId);
+    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+      sceneRef.current.remove(modelObj);
+    }
+    fileRef.current = null;
+  };
+}, [isFileVisible]);
 
   // 카메라 애니메이션 함수
   const animateCameraTo = (toPosition, toTarget, duration = CAMERA_ANIMATION_DURATION) => {
