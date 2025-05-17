@@ -28,6 +28,7 @@ const EncryptionVisualizationScene = () => {
   const fileRef = useRef(null);
   const [isKeycardVisible, setIsKeycardVisible] = useState(false);
   const [isFileVisible, setIsFileVisible] = useState(false);
+  const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
@@ -36,7 +37,6 @@ const EncryptionVisualizationScene = () => {
   const handleUploadClick = () => {
     if (keycardRef.current || fileRef.current) return; // 중복 방지
 
-    // 1. 카메라를 줌인할 위치/타겟 지정 (예시: 원점 근처로 이동)
     const zoomPosition = { x: -20, y: 0, z: -10 };
     const zoomTarget = { x: 0, y: 0, z: 0 };
 
@@ -48,9 +48,13 @@ const EncryptionVisualizationScene = () => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
 
-      // 4. 키카드가 다 나타난 뒤 file 생성 (추가 딜레이)
       setTimeout(() => {
         setIsFileVisible(true);
+
+        // file 등장 후 약간의 딜레이 후 이동 애니메이션 시작
+        setTimeout(() => {
+          setIsMovingToOrigin(true);
+        }, 1000 + 300); // file 등장 애니메이션(1초) + 0.3초 추가 딜레이
       }, 1000 + 300); // 키카드 애니메이션(1초) + 0.3초 추가 딜레이
     }, 800);
   };
@@ -483,6 +487,44 @@ const EncryptionVisualizationScene = () => {
   const handleCameraReset = () => {
     animateCameraTo(initialCameraPosition, initialTarget);
   };
+
+  // 파일/키카드 모델을 원점으로 이동시키는 애니메이션
+  useEffect(() => {
+    if (!isMovingToOrigin) return;
+    let frameId;
+    const moveDuration = 1000; // 1초
+    let startTime = null;
+
+    // 시작 위치 저장
+    const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
+    const fileStart = fileRef.current ? fileRef.current.position.clone() : null;
+    // 이동 목표 위치를 다르게 지정
+    const keycardTarget = new THREE.Vector3(-2, 0, 0); // 예: 원점 왼쪽
+    const fileTarget = new THREE.Vector3(2, -2, 0);     // 예: 원점 오른쪽
+
+    const animateMove = (timestamp) => {
+      if (!isMounted.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / moveDuration, 1);
+
+      if (keycardRef.current && keycardStart) {
+        keycardRef.current.position.lerpVectors(keycardStart, keycardTarget, t);
+      }
+      if (fileRef.current && fileStart) {
+        fileRef.current.position.lerpVectors(fileStart, fileTarget, t);
+      }
+
+      if (t < 1) {
+        frameId = requestAnimationFrame(animateMove);
+      }
+    };
+    frameId = requestAnimationFrame(animateMove);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [isMovingToOrigin]);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
