@@ -46,6 +46,10 @@ const EncryptionVisualizationScene = () => {
   // policy 모델 등장 완료 후에만 이동 애니메이션을 시작하도록 상태 추가
   const [isPolicyFullyVisible, setIsPolicyFullyVisible] = useState(false);
 
+  // CP-ABE 업로드 완료 메시지 상태 추가
+  const [showAbeUploadComplete, setShowAbeUploadComplete] = useState(false);
+  const [abeUploadCompleteOpacity, setAbeUploadCompleteOpacity] = useState(0);
+
   // keycard 생성 및 애니메이션 함수
   const handleUploadClick = () => {
     if (isAnimating) return;
@@ -932,7 +936,44 @@ const EncryptionVisualizationScene = () => {
       } else {
         setIsAbeGroupMoving(false);
         setIsAbeAnimating(false);
-        // 이후 단계 필요시 추가
+
+        // === CP-ABE 업로드 완료 메시지 표시 ===
+        setShowAbeUploadComplete(true);
+        setAbeUploadCompleteOpacity(0);
+
+        // 페이드인/아웃
+        let fadeInStart = null;
+        const fadeInDuration = 500;
+        const fadeOutDuration = 500;
+        const showDuration = 1000;
+
+        function fadeIn(ts) {
+          if (!fadeInStart) fadeInStart = ts;
+          const elapsed = ts - fadeInStart;
+          const t = Math.min(elapsed / fadeInDuration, 1);
+          setAbeUploadCompleteOpacity(t);
+          if (t < 1) {
+            requestAnimationFrame(fadeIn);
+          } else {
+            // 1초 유지 후 페이드아웃
+            setTimeout(() => {
+              let fadeOutStart = null;
+              function fadeOut(ts2) {
+                if (!fadeOutStart) fadeOutStart = ts2;
+                const elapsed2 = ts2 - fadeOutStart;
+                const t2 = Math.min(elapsed2 / fadeOutDuration, 1);
+                setAbeUploadCompleteOpacity(1 - t2);
+                if (t2 < 1) {
+                  requestAnimationFrame(fadeOut);
+                } else {
+                  setShowAbeUploadComplete(false);
+                }
+              }
+              requestAnimationFrame(fadeOut);
+            }, showDuration);
+          }
+        }
+        requestAnimationFrame(fadeIn);
       }
     };
     frameId = requestAnimationFrame(animateMove);
@@ -975,6 +1016,39 @@ const EncryptionVisualizationScene = () => {
             }}
           >
             IPFS에 업데이트 파일 업로드 완료!
+          </div>
+        </div>
+      )}
+      {/* CP-ABE 업로드 완료 메시지 */}
+      {showAbeUploadComplete && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            zIndex: 21,
+          }}
+        >
+          <div
+            style={{
+              fontSize: '2.2rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              background: 'rgba(0,0,0,0.7)',
+              padding: '32px 48px',
+              borderRadius: '18px',
+              boxShadow: '0 4px 32px rgba(0,0,0,0.25)',
+              opacity: abeUploadCompleteOpacity,
+              transition: 'opacity 0.2s',
+            }}
+          >
+            CP-ABE 암호문 블록체인에 업로드 완료!
           </div>
         </div>
       )}
