@@ -31,6 +31,9 @@ const EncryptionVisualizationScene = () => {
   const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
   const [isCubeVisible, setIsCubeVisible] = useState(false);
   const [isClusterMoving, setIsClusterMoving] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false); // 애니메이션 진행 중 여부
+  const [showUploadComplete, setShowUploadComplete] = useState(false);
+  const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
@@ -38,15 +41,36 @@ const EncryptionVisualizationScene = () => {
 
   // keycard 생성 및 애니메이션 함수
   const handleUploadClick = () => {
-    if (keycardRef.current || fileRef.current) return; // 중복 방지
+    if (isAnimating) return;
+    setIsAnimating(true);
 
+    // 초기화
+    setIsKeycardVisible(false);
+    setIsFileVisible(false);
+    setIsMovingToOrigin(false);
+    setIsCubeVisible(false);
+    setIsClusterMoving(false);
+
+    // 키카드, 파일, 큐브 모델 제거
+    if (keycardRef.current && sceneRef.current) {
+      sceneRef.current.remove(keycardRef.current);
+      keycardRef.current = null;
+    }
+    if (fileRef.current && sceneRef.current) {
+      sceneRef.current.remove(fileRef.current);
+      fileRef.current = null;
+    }
+    if (cubeRef.current && sceneRef.current) {
+      sceneRef.current.remove(cubeRef.current);
+      cubeRef.current = null;
+    }
+
+    // 1. 원점 쪽으로 카메라 줌 (초기 애니메이션)
     const zoomPosition = { x: -20, y: 0, z: -10 };
     const zoomTarget = { x: 0, y: 0, z: 0 };
-
-    // 2. 카메라 애니메이션 후 키카드 생성
     animateCameraTo(zoomPosition, zoomTarget, 800);
 
-    // 3. 카메라 애니메이션이 끝난 뒤 키카드 생성 (딜레이)
+    // 2. 약간의 딜레이 후 애니메이션 시작
     setTimeout(() => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
@@ -54,15 +78,12 @@ const EncryptionVisualizationScene = () => {
       setTimeout(() => {
         setIsFileVisible(true);
 
-        // file 등장 후 약간의 딜레이 후 이동 애니메이션 시작
         setTimeout(() => {
           setIsMovingToOrigin(true);
 
-          // 이동 애니메이션이 끝난 뒤(1초 후) 큐브 등장
           setTimeout(() => {
             setIsCubeVisible(true);
 
-            // 큐브 등장 후 약간의 딜레이 후 클러스터로 이동 애니메이션 시작
             setTimeout(() => {
               setIsClusterMoving(true);
             }, 1000 + 300); // 큐브 등장 1초 + 0.3초 딜레이
@@ -609,7 +630,7 @@ const EncryptionVisualizationScene = () => {
 
     // 카메라 이동용: 시작점과 타겟
     const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
-    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(0, 10, 30)); // 타겟 위/뒤에서 바라보게
+    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30)); // 타겟 위/뒤에서 바라보게
 
     const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
     const controlsTarget = clusterTarget.clone();
@@ -639,6 +660,47 @@ const EncryptionVisualizationScene = () => {
 
       if (t < 1) {
         frameId = requestAnimationFrame(animateMove);
+      } else {
+        // 애니메이션이 끝나면 버튼 활성화
+        setIsAnimating(false);
+
+        // === 업로드 완료 메시지 표시 ===
+        setShowUploadComplete(true);
+        setUploadCompleteOpacity(0);
+
+        // 페이드인
+        let fadeInStart = null;
+        const fadeInDuration = 500;
+        const fadeOutDuration = 500;
+        const showDuration = 1000;
+
+        function fadeIn(ts) {
+          if (!fadeInStart) fadeInStart = ts;
+          const elapsed = ts - fadeInStart;
+          const t = Math.min(elapsed / fadeInDuration, 1);
+          setUploadCompleteOpacity(t);
+          if (t < 1) {
+            requestAnimationFrame(fadeIn);
+          } else {
+            // 1초 유지 후 페이드아웃
+            setTimeout(() => {
+              let fadeOutStart = null;
+              function fadeOut(ts2) {
+                if (!fadeOutStart) fadeOutStart = ts2;
+                const elapsed2 = ts2 - fadeOutStart;
+                const t2 = Math.min(elapsed2 / fadeOutDuration, 1);
+                setUploadCompleteOpacity(1 - t2);
+                if (t2 < 1) {
+                  requestAnimationFrame(fadeOut);
+                } else {
+                  setShowUploadComplete(false);
+                }
+              }
+              requestAnimationFrame(fadeOut);
+            }, showDuration);
+          }
+        }
+        requestAnimationFrame(fadeIn);
       }
     };
     frameId = requestAnimationFrame(animateMove);
@@ -651,6 +713,39 @@ const EncryptionVisualizationScene = () => {
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      {/* 업로드 완료 메시지 */}
+      {showUploadComplete && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            zIndex: 20,
+          }}
+        >
+          <div
+            style={{
+              fontSize: '2.2rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              background: 'rgba(0,0,0,0.7)',
+              padding: '32px 48px',
+              borderRadius: '18px',
+              boxShadow: '0 4px 32px rgba(0,0,0,0.25)',
+              opacity: uploadCompleteOpacity,
+              transition: 'opacity 0.2s',
+            }}
+          >
+            IPFS에 업데이트 파일 업로드 완료!
+          </div>
+        </div>
+      )}
       <div style={{
         position: 'absolute',
         left: 20,
@@ -682,12 +777,12 @@ const EncryptionVisualizationScene = () => {
             border: 'none',
             background: '#00b894',
             color: '#fff',
-            cursor: isKeycardVisible ? 'not-allowed' : 'pointer',
+            cursor: isAnimating ? 'not-allowed' : 'pointer',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            opacity: isKeycardVisible ? 0.5 : 1,
+            opacity: isAnimating ? 0.5 : 1,
           }}
           onClick={handleUploadClick}
-          disabled={isKeycardVisible}
+          disabled={isAnimating}
         >
           업데이트 파일 업로드
         </button>
