@@ -30,6 +30,7 @@ const EncryptionVisualizationScene = () => {
   const [isFileVisible, setIsFileVisible] = useState(false);
   const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
   const [isCubeVisible, setIsCubeVisible] = useState(false);
+  const [isClusterMoving, setIsClusterMoving] = useState(false);
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
@@ -60,6 +61,11 @@ const EncryptionVisualizationScene = () => {
           // 이동 애니메이션이 끝난 뒤(1초 후) 큐브 등장
           setTimeout(() => {
             setIsCubeVisible(true);
+
+            // 큐브 등장 후 약간의 딜레이 후 클러스터로 이동 애니메이션 시작
+            setTimeout(() => {
+              setIsClusterMoving(true);
+            }, 1000 + 300); // 큐브 등장 1초 + 0.3초 딜레이
           }, 1000 + 300); // 이동 1초 + 0.3초 딜레이
         }, 1000 + 300); // file 등장 1초 + 0.3초 딜레이
       }, 1000 + 300); // keycard 등장 1초 + 0.3초 딜레이
@@ -574,6 +580,73 @@ const EncryptionVisualizationScene = () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
   }, [isMovingToOrigin]);
+
+  // 그룹(키카드, 파일, 큐브)을 구 클러스터의 임의 위치로 이동시키는 애니메이션
+  useEffect(() => {
+    if (!isClusterMoving) return;
+    let frameId;
+    const moveDuration = 2500; // 이동 속도 느리게 (2.5초)
+    let startTime = null;
+
+    // 그룹의 모델들
+    const models = [keycardRef.current, fileRef.current, cubeRef.current].filter(Boolean);
+    if (models.length === 0) return;
+
+    // 그룹의 초기 중심점 계산
+    const groupStartCenter = new THREE.Vector3();
+    models.forEach(m => groupStartCenter.add(m.position));
+    groupStartCenter.divideScalar(models.length);
+
+    // 각 모델의 상대 위치(중심점 기준)
+    const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
+
+    // 구 클러스터의 임의 위치 생성
+    const clusterTarget = new THREE.Vector3(
+      Math.random() * 20 + 200,
+      Math.random() * 20 + 100,
+      Math.random() * 20 - 10
+    );
+
+    // 카메라 이동용: 시작점과 타겟
+    const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
+    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(0, 10, 30)); // 타겟 위/뒤에서 바라보게
+
+    const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
+    const controlsTarget = clusterTarget.clone();
+
+    const animateMove = (timestamp) => {
+      if (!isMounted.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / moveDuration, 1);
+
+      // 현재 그룹 중심점 위치 보간
+      const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
+
+      // 각 모델을 그룹 내 상대 위치를 유지하며 이동
+      models.forEach((m, i) => {
+        m.position.copy(currentCenter.clone().add(relativePositions[i]));
+      });
+
+      // 카메라도 같이 이동
+      if (cameraRef.current && cameraStart && cameraTarget) {
+        cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
+      }
+      if (controlsRef.current && controlsStart && controlsTarget) {
+        controlsRef.current.target.lerpVectors(controlsStart, controlsTarget, t);
+        controlsRef.current.update();
+      }
+
+      if (t < 1) {
+        frameId = requestAnimationFrame(animateMove);
+      }
+    };
+    frameId = requestAnimationFrame(animateMove);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [isClusterMoving]);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
