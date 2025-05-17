@@ -26,6 +26,7 @@ const EncryptionVisualizationScene = () => {
   const cameraAnimationRef = useRef(null);
   const keycardRef = useRef(null);
   const fileRef = useRef(null);
+  const policyRef = useRef(null);
   const [isKeycardVisible, setIsKeycardVisible] = useState(false);
   const [isFileVisible, setIsFileVisible] = useState(false);
   const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
@@ -34,6 +35,7 @@ const EncryptionVisualizationScene = () => {
   const [isAnimating, setIsAnimating] = useState(false); // 애니메이션 진행 중 여부
   const [showUploadComplete, setShowUploadComplete] = useState(false);
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
+  const [isAbeAnimating, setIsAbeAnimating] = useState(false);
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
@@ -219,6 +221,51 @@ const EncryptionVisualizationScene = () => {
     cubeRef.current = null;
   };
 }, [isCubeVisible]);
+
+  // policy 모델 생성 및 애니메이션
+  useEffect(() => {
+  if (!isAbeAnimating) return;
+  if (!isKeycardVisible) return;
+  let frameId;
+  let modelObj = null;
+  const loader = new GLTFLoader();
+  const timeoutId = setTimeout(() => {
+    loader.load('/resources/models/policy.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, -2, 4);
+      modelObj.rotateY(Math.PI / 2 * -1);
+      sceneRef.current.add(modelObj);
+      policyRef.current = modelObj;
+
+      const duration = 1000;
+      let startTime = null;
+      const animateAppear = (timestamp) => {
+        if (!isMounted.current || !policyRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const scale = 14 * progress;
+        policyRef.current.scale.set(scale, scale, scale);
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animateAppear);
+        }
+      };
+      frameId = requestAnimationFrame(animateAppear);
+    });
+  }, 1000);
+
+  return () => {
+    clearTimeout(timeoutId);
+    if (frameId) cancelAnimationFrame(frameId);
+    // ❗️문제의 원인: 아래 코드가 항상 실행됨
+    // if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+    //   sceneRef.current.remove(modelObj);
+    // }
+    // policyRef.current = null;
+  };
+}, [isAbeAnimating, isKeycardVisible]);
 
   // 카메라 애니메이션 함수
   const animateCameraTo = (toPosition, toTarget, duration = CAMERA_ANIMATION_DURATION) => {
@@ -663,6 +710,7 @@ const EncryptionVisualizationScene = () => {
       } else {
         // 애니메이션이 끝나면 버튼 활성화
         setIsAnimating(false);
+        setIsAbeAnimating(false);
 
         // === 업로드 완료 메시지 표시 ===
         setShowUploadComplete(true);
@@ -709,6 +757,53 @@ const EncryptionVisualizationScene = () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
   }, [isClusterMoving]);
+
+  // CP-ABE 암호문 업로드 버튼 핸들러
+  const handleAbeUploadClick = () => {
+    if (isAbeAnimating) return;
+    setIsAbeAnimating(true);
+
+    // 초기화
+    setIsKeycardVisible(false);
+    setIsFileVisible(false);
+    setIsMovingToOrigin(false);
+    setIsCubeVisible(false);
+    setIsClusterMoving(false);
+
+    // 키카드, 파일, 큐브, policy 모델 제거
+    if (keycardRef.current && sceneRef.current) {
+      sceneRef.current.remove(keycardRef.current);
+      keycardRef.current = null;
+    }
+    if (fileRef.current && sceneRef.current) {
+      sceneRef.current.remove(fileRef.current);
+      fileRef.current = null;
+    }
+    if (cubeRef.current && sceneRef.current) {
+      sceneRef.current.remove(cubeRef.current);
+      cubeRef.current = null;
+    }
+    if (policyRef.current && sceneRef.current) {
+      sceneRef.current.remove(policyRef.current);
+      policyRef.current = null;
+    }
+
+    // 1. 원점 쪽으로 카메라 줌 (초기 애니메이션)
+    const zoomPosition = { x: -20, y: 0, z: -10 };
+    const zoomTarget = { x: 0, y: 0, z: 0 };
+    animateCameraTo(zoomPosition, zoomTarget, 800);
+
+    // 2. 약간의 딜레이 후 키카드만 등장
+    setTimeout(() => {
+      setIsKeycardVisible(true);
+      setKeycardAppearProgress(0);
+      // policy는 위 useEffect에서 자동 등장
+      // 버튼 다시 활성화(정확히는 policy 애니메이션 끝나고 활성화해도 됨)
+      setTimeout(() => {
+        setIsAbeAnimating(false);
+      }, 2000); // 키카드 1초 + policy 1초 후
+    }, 800);
+  };
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
@@ -785,6 +880,23 @@ const EncryptionVisualizationScene = () => {
           disabled={isAnimating}
         >
           업데이트 파일 업로드
+        </button>
+        <button
+          style={{
+            padding: '10px 18px',
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#6c47ff',
+            color: '#fff',
+            cursor: isAbeAnimating ? 'not-allowed' : 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            opacity: isAbeAnimating ? 0.5 : 1,
+          }}
+          onClick={handleAbeUploadClick}
+          disabled={isAbeAnimating}
+        >
+          CP-ABE 암호문 업로드
         </button>
       </div>
     </div>
