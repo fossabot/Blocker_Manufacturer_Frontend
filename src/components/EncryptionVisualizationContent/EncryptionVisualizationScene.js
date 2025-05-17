@@ -37,6 +37,7 @@ const EncryptionVisualizationScene = () => {
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const [isAbeAnimating, setIsAbeAnimating] = useState(false);
   const [isAbeMovingToOrigin, setIsAbeMovingToOrigin] = useState(false);
+  const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false); // CP-ABE 키카드+policy+큐브를 하나의 그룹처럼 큐브 클러스터 쪽으로 이동시키는 상태
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
@@ -812,6 +813,17 @@ const EncryptionVisualizationScene = () => {
     }, 800);
   };
 
+  // policy가 완전히 나타난 후에만 이동 애니메이션 시작
+  useEffect(() => {
+    if (!isPolicyFullyVisible) return;
+    // 약간의 추가 딜레이 후 이동
+    const delay = 200;
+    const timeout = setTimeout(() => {
+      setIsAbeMovingToOrigin(true);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [isPolicyFullyVisible]);
+
   // CP-ABE 키카드+policy 원점 이동 애니메이션
   useEffect(() => {
     if (!isAbeMovingToOrigin) return;
@@ -845,6 +857,10 @@ const EncryptionVisualizationScene = () => {
         // 이동이 끝난 뒤 약간의 딜레이 후 큐브 등장 애니메이션
         setTimeout(() => {
           setIsCubeVisible(true);
+          // 큐브 등장 후 그룹 이동 애니메이션 시작
+          setTimeout(() => {
+            setIsAbeGroupMoving(true);
+          }, 1000); // 큐브 등장 애니메이션 1초 후
         }, 200); // 0.2초 딜레이
       }
     };
@@ -855,16 +871,76 @@ const EncryptionVisualizationScene = () => {
     };
   }, [isAbeMovingToOrigin]);
 
-  // policy가 완전히 나타난 후에만 이동 애니메이션 시작
+  // CP-ABE 키카드+policy+큐브를 하나의 그룹처럼 큐브 클러스터 쪽으로 이동시키는 애니메이션
   useEffect(() => {
-    if (!isPolicyFullyVisible) return;
-    // 약간의 추가 딜레이 후 이동
-    const delay = 200;
-    const timeout = setTimeout(() => {
-      setIsAbeMovingToOrigin(true);
-    }, delay);
-    return () => clearTimeout(timeout);
-  }, [isPolicyFullyVisible]);
+    if (!isAbeGroupMoving) return;
+    let frameId;
+    const moveDuration = 2500; // 2.5초
+    let startTime = null;
+
+    // 이동 대상 위치: 큐브 클러스터의 임의 위치
+    const clusterTarget = new THREE.Vector3(
+      Math.random() * 20 + 200,
+      Math.random() * 20 + 100,
+      Math.random() * 20 + 100
+    );
+
+    // 그룹 모델들
+    const models = [keycardRef.current, policyRef.current, cubeRef.current].filter(Boolean);
+    if (models.length === 0) return;
+
+    // 그룹의 초기 중심점 계산
+    const groupStartCenter = new THREE.Vector3();
+    models.forEach(m => groupStartCenter.add(m.position));
+    groupStartCenter.divideScalar(models.length);
+
+    // 각 모델의 상대 위치(중심점 기준)
+    const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
+
+    // 카메라 이동용: 시작점과 타겟
+    const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
+    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30)); // 타겟 위/뒤에서 바라보게
+
+    const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
+    const controlsTarget = clusterTarget.clone();
+
+    const animateMove = (timestamp) => {
+      if (!isMounted.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / moveDuration, 1);
+
+      // 현재 그룹 중심점 위치 보간
+      const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
+
+      // 각 모델을 그룹 내 상대 위치를 유지하며 이동
+      models.forEach((m, i) => {
+        m.position.copy(currentCenter.clone().add(relativePositions[i]));
+      });
+
+      // 카메라도 같이 이동
+      if (cameraRef.current && cameraStart && cameraTarget) {
+        cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
+      }
+      if (controlsRef.current && controlsStart && controlsTarget) {
+        controlsRef.current.target.lerpVectors(controlsStart, controlsTarget, t);
+        controlsRef.current.update();
+      }
+
+      if (t < 1) {
+        frameId = requestAnimationFrame(animateMove);
+      } else {
+        setIsAbeGroupMoving(false);
+        setIsAbeAnimating(false);
+        // 이후 단계 필요시 추가
+      }
+    };
+    frameId = requestAnimationFrame(animateMove);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [isAbeGroupMoving]);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
