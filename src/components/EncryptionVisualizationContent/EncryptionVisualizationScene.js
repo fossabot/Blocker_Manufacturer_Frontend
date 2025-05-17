@@ -431,7 +431,7 @@ const EncryptionVisualizationScene = () => {
     // );
 
     // clipboard.glb 모델을 원점에 추가
-    // const clipboradLoader = new GLTFLoader();
+    // const keyLoader = new GLTFLoader();
     // keyLoader.load(
     //   '/resources/models/policy.glb',
     //   (gltf) => {
@@ -841,6 +841,11 @@ const EncryptionVisualizationScene = () => {
 
       if (t < 1) {
         frameId = requestAnimationFrame(animateMove);
+      } else {
+        // 이동이 끝난 뒤 약간의 딜레이 후 큐브 등장 애니메이션
+        setTimeout(() => {
+          setIsCubeVisible(true);
+        }, 200); // 0.2초 딜레이
       }
     };
     frameId = requestAnimationFrame(animateMove);
