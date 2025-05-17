@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -24,6 +24,71 @@ const EncryptionVisualizationScene = () => {
   const sphereClusterCenter = new THREE.Vector3();
   const signalRefs = useRef([]);
   const cameraAnimationRef = useRef(null);
+  const keycardRef = useRef(null);
+  const [isKeycardVisible, setIsKeycardVisible] = useState(false);
+
+  // keycard 애니메이션용 상태
+  const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
+
+  // keycard 생성 및 애니메이션 함수
+  const handleUploadClick = () => {
+    if (keycardRef.current) return; // 이미 있으면 중복 생성 방지
+
+    // 1. 카메라를 줌인할 위치/타겟 지정 (예시: 원점 근처로 이동)
+    const zoomPosition = { x: -20, y: 0, z: -10 };
+    const zoomTarget = { x: 0, y: 0, z: 0 };
+
+    // 2. 카메라 애니메이션 후 키카드 생성
+    animateCameraTo(zoomPosition, zoomTarget, 800);
+
+    // 3. 카메라 애니메이션이 끝난 뒤 키카드 생성 (딜레이)
+    setTimeout(() => {
+      setIsKeycardVisible(true);
+      setKeycardAppearProgress(0);
+    }, 800);
+  };
+
+  // keycard 모델 생성 및 애니메이션
+  useEffect(() => {
+  if (!isKeycardVisible) return;
+  let frameId;
+  let modelObj = null;
+  const loader = new GLTFLoader();
+  loader.load('/resources/models/key_card.glb', (gltf) => {
+    if (!isMounted.current) return;
+    modelObj = gltf.scene;
+    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
+    modelObj.position.set(0, 0, -10);
+    sceneRef.current.add(modelObj);
+    keycardRef.current = modelObj;
+
+    // 시간 기반 애니메이션
+    const duration = 1000; // 1초 동안 애니메이션
+    let startTime = null;
+
+    const animateAppear = (timestamp) => {
+      if (!isMounted.current || !keycardRef.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
+      const scale = 0.01 * progress; // 스케일 0에서 0.01로
+      keycardRef.current.scale.set(scale, scale, scale);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animateAppear);
+      }
+    };
+    frameId = requestAnimationFrame(animateAppear);
+  });
+
+  return () => {
+    if (frameId) cancelAnimationFrame(frameId);
+    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+      sceneRef.current.remove(modelObj);
+    }
+    keycardRef.current = null;
+  };
+}, [isKeycardVisible]);
 
   // 카메라 애니메이션 함수
   const animateCameraTo = (toPosition, toTarget, duration = CAMERA_ANIMATION_DURATION) => {
@@ -372,25 +437,47 @@ const EncryptionVisualizationScene = () => {
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      <button
-        style={{
-          position: 'absolute',
-          left: 20,
-          bottom: 20,
-          zIndex: 10,
-          padding: '10px 18px',
-          fontSize: '16px',
-          borderRadius: '8px',
-          border: 'none',
-          background: '#0046ff',
-          color: '#fff',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        }}
-        onClick={handleCameraReset}
-      >
-        카메라 초기 위치로 이동
-      </button>
+      <div style={{
+        position: 'absolute',
+        left: 20,
+        bottom: 20,
+        zIndex: 10,
+        display: 'flex',
+        gap: 10,
+      }}>
+        <button
+          style={{
+            padding: '10px 18px',
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#0046ff',
+            color: '#fff',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+          onClick={handleCameraReset}
+        >
+          카메라 초기 위치로 이동
+        </button>
+        <button
+          style={{
+            padding: '10px 18px',
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#00b894',
+            color: '#fff',
+            cursor: isKeycardVisible ? 'not-allowed' : 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            opacity: isKeycardVisible ? 0.5 : 1,
+          }}
+          onClick={handleUploadClick}
+          disabled={isKeycardVisible}
+        >
+          업데이트 파일 업로드
+        </button>
+      </div>
     </div>
   );
 };
