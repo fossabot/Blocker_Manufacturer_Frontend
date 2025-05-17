@@ -8,6 +8,7 @@ import AccessPolicyPage from './pages/AccessPolicy';
 import DeploymentSummaryPage from './pages/DeploymentSummary';
 import DeploymentCompletePage from './pages/DeploymentComplete';
 import UpdateMonitoringPage from './pages/UpdateMonitoring';
+import EncryptionVisualizationScene from './components/EncryptionVisualizationContent/EncryptionVisualizationScene'
 
 function App() {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ function App() {
   }, []);
 
   const handleDeploy = useCallback(async (skipDetails, setIsDeploying) => {
+
     console.log("App.js: Deploy button clicked with final data:", deploymentData);
     console.log("Skip Details:", skipDetails);
     console.log("API Base URL:", process.env.REACT_APP_API_BASE_URL);
@@ -120,7 +122,7 @@ function App() {
       });
 
       console.log('Deployment successful:', response.data);
-      alert('배포가 완료되었습니다!');
+      // alert('배포가 완료되었습니다!');
       setIsDeploying(false);
 
       setDeploymentData({
@@ -137,7 +139,12 @@ function App() {
         },
       });
 
-      navigate('/complete');
+      // skipDetails 값에 따라 다른 경로로 이동
+      if (skipDetails) {
+        navigate('/complete');
+      } else {
+        navigate('/encryption-visualization');
+}
     } catch (error) {
       console.error('Deployment failed:', error);
       console.log('Server error response:', error.response?.data);
@@ -176,6 +183,10 @@ function App() {
             element={<DeploymentSummaryPage deploymentData={deploymentData} onDeployConfirm={handleDeploy} />}
           />
           <Route path="/complete" element={<DeploymentCompletePage />} />
+          <Route 
+            path="/encryption-visualization" 
+            element={<EncryptionVisualizationScene />} 
+          />
         </Routes>
       </main>
     </div>
