@@ -4,12 +4,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 // 저장해둔 초기 카메라 위치
-const initialCameraPosition = { x: -50, y: 0, z: -15 };
+const initialCameraPosition = { x: -70, y: -20, z: -35 };
 const initialTarget = { x: 100, y: 30, z: 50 };
 
 const CAMERA_ANIMATION_DURATION = 1000; // ms
-
-// === 딜레이 상수 한 곳에서 관리 ===
 const ANIMATION_DELAY = 3000; // ms, 모든 단계 사이 딜레이
 
 const EncryptionVisualizationScene = () => {
@@ -22,7 +20,7 @@ const EncryptionVisualizationScene = () => {
   const animationFrameId = useRef(null);
   const cubeClusterRef = useRef([]);
   const sphereClusterRef = useRef([]);
-  const centerPosition = new THREE.Vector3(0, 0, 0); // 센터 포지션 변수
+  const centerPosition = new THREE.Vector3(0, 0, 0);
   const cubeClusterCenter = new THREE.Vector3();
   const sphereClusterCenter = new THREE.Vector3();
   const signalRefs = useRef([]);
@@ -35,12 +33,13 @@ const EncryptionVisualizationScene = () => {
   const [isMovingToOrigin, setIsMovingToOrigin] = useState(false);
   const [isCubeVisible, setIsCubeVisible] = useState(false);
   const [isClusterMoving, setIsClusterMoving] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false); // 애니메이션 진행 중 여부
+  const [isAnimating, setIsAnimating] = useState(false);
   const [showUploadComplete, setShowUploadComplete] = useState(false);
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const [isAbeAnimating, setIsAbeAnimating] = useState(false);
   const [isAbeMovingToOrigin, setIsAbeMovingToOrigin] = useState(false);
-  const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false); // CP-ABE 키카드+policy+큐브를 하나의 그룹처럼 큐브 클러스터 쪽으로 이동시키는 상태
+  const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false);
+  const labelRendererRef = useRef(null);
   const cubeRef = useRef(null);
 
   // keycard 애니메이션용 상태
@@ -53,7 +52,7 @@ const EncryptionVisualizationScene = () => {
   const [showAbeUploadComplete, setShowAbeUploadComplete] = useState(false);
   const [abeUploadCompleteOpacity, setAbeUploadCompleteOpacity] = useState(0);
 
-  // keycard 생성 및 애니메이션 함수
+  // 업데이트 파일 업로드 애니메이션 시작
   const handleUploadClick = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -84,7 +83,7 @@ const EncryptionVisualizationScene = () => {
     const zoomTarget = { x: 0, y: 0, z: 0 };
     animateCameraTo(zoomPosition, zoomTarget, 800);
 
-    // 2. 약간의 딜레이 후 애니메이션 시작
+    // 2. 단계별 애니메이션
     setTimeout(() => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
@@ -100,195 +99,188 @@ const EncryptionVisualizationScene = () => {
 
             setTimeout(() => {
               setIsClusterMoving(true);
-            }, ANIMATION_DELAY); // 큐브 등장 후 클러스터 이동 딜레이
-          }, ANIMATION_DELAY); // 원점 이동 후 큐브 등장 딜레이
-        }, ANIMATION_DELAY); // 파일 등장 후 원점 이동 딜레이
-      }, ANIMATION_DELAY); // 키카드 등장 후 파일 등장 딜레이
+            }, ANIMATION_DELAY);
+          }, ANIMATION_DELAY);
+        }, ANIMATION_DELAY);
+      }, ANIMATION_DELAY);
     }, ANIMATION_DELAY);
   };
 
   // keycard 모델 생성 및 애니메이션
   useEffect(() => {
-  if (!isKeycardVisible) return;
-  let frameId;
-  let modelObj = null;
-  const loader = new GLTFLoader();
-  loader.load('/resources/models/key_card.glb', (gltf) => {
-    if (!isMounted.current) return;
-    modelObj = gltf.scene;
-    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
-    modelObj.position.set(0, 0, -5);
-    sceneRef.current.add(modelObj);
-    keycardRef.current = modelObj;
-
-    // 시간 기반 애니메이션
-    const duration = 1000; // 1초 동안 애니메이션
-    let startTime = null;
-
-    const animateAppear = (timestamp) => {
-      if (!isMounted.current || !keycardRef.current) return;
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
-      const scale = 0.01 * progress; // 스케일 0에서 0.01로
-      keycardRef.current.scale.set(scale, scale, scale);
-
-      if (progress < 1) {
-        frameId = requestAnimationFrame(animateAppear);
-      }
-    };
-    frameId = requestAnimationFrame(animateAppear);
-  });
-
-  return () => {
-    if (frameId) cancelAnimationFrame(frameId);
-    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-      sceneRef.current.remove(modelObj);
-    }
-    keycardRef.current = null;
-  };
-}, [isKeycardVisible]);
-
-  // file 모델 생성 및 애니메이션
-  useEffect(() => {
-  if (!isFileVisible) return;
-  let frameId;
-  let modelObj = null;
-  const loader = new GLTFLoader();
-  loader.load('/resources/models/file.glb', (gltf) => {
-    if (!isMounted.current) return;
-    modelObj = gltf.scene;
-    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
-    modelObj.position.set(0, -1, 5);
-    modelObj.rotateY(Math.PI / 2 * -1)
-    sceneRef.current.add(modelObj);
-    fileRef.current = modelObj;
-
-    // 시간 기반 애니메이션
-    const duration = 1000; // 1초 동안 애니메이션
-    let startTime = null;
-
-    const animateAppear = (timestamp) => {
-      if (!isMounted.current || !fileRef.current) return;
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
-      const scale = 0.03 * progress; // 스케일 0에서 0.05로
-      fileRef.current.scale.set(scale, scale, scale);
-
-      if (progress < 1) {
-        frameId = requestAnimationFrame(animateAppear);
-      }
-    };
-    frameId = requestAnimationFrame(animateAppear);
-  });
-
-  return () => {
-    if (frameId) cancelAnimationFrame(frameId);
-    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-      sceneRef.current.remove(modelObj);
-    }
-    fileRef.current = null;
-  };
-}, [isFileVisible]);
-
-  // 큐브 모델 생성 및 애니메이션
-  useEffect(() => {
-  if (!isCubeVisible) return;
-  let frameId;
-  let modelObj = null;
-  const loader = new GLTFLoader();
-  loader.load('/resources/models/cube.glb', (gltf) => {
-    if (!isMounted.current) return;
-    modelObj = gltf.scene;
-    modelObj.scale.set(0, 0, 0); // 초기 스케일 0
-    modelObj.position.set(0, 0, 0); // 원점
-    sceneRef.current.add(modelObj);
-    cubeRef.current = modelObj;
-
-    // 시간 기반 애니메이션
-    const duration = 1000; // 1초 동안 애니메이션
-    let startTime = null;
-
-    const animateAppear = (timestamp) => {
-      if (!isMounted.current || !cubeRef.current) return;
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1); // 0에서 1까지 진행
-      const scale = 0.2 * progress; // 스케일 0에서 0.3으로
-      cubeRef.current.scale.set(scale, scale, scale);
-
-      if (progress < 1) {
-        frameId = requestAnimationFrame(animateAppear);
-      }
-    };
-    frameId = requestAnimationFrame(animateAppear);
-  });
-
-  return () => {
-    if (frameId) cancelAnimationFrame(frameId);
-    if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-      sceneRef.current.remove(modelObj);
-    }
-    cubeRef.current = null;
-  };
-}, [isCubeVisible]);
-
-  // policy 모델 생성 및 애니메이션
-  useEffect(() => {
-  if (!isAbeAnimating) return;
-  if (!isKeycardVisible) return;
-  let frameId;
-  let modelObj = null;
-  const loader = new GLTFLoader();
-  // 정책 모델 등장 딜레이를 상수로 관리
-  const policyAppearDelay = ANIMATION_DELAY;
-  const timeoutId = setTimeout(() => {
-    loader.load('/resources/models/policy.glb', (gltf) => {
+    if (!isKeycardVisible) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/key_card.glb', (gltf) => {
       if (!isMounted.current) return;
       modelObj = gltf.scene;
       modelObj.scale.set(0, 0, 0);
-      modelObj.position.set(0, -2, 4);
-      modelObj.rotateY(Math.PI / 2 * -1);
+      modelObj.position.set(0, 0, -5);
       sceneRef.current.add(modelObj);
-      policyRef.current = modelObj;
+      keycardRef.current = modelObj;
 
+      // 시간 기반 애니메이션
       const duration = 1000;
       let startTime = null;
+
       const animateAppear = (timestamp) => {
-        if (!isMounted.current || !policyRef.current) return;
+        if (!isMounted.current || !keycardRef.current) return;
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const scale = 14 * progress;
-        policyRef.current.scale.set(scale, scale, scale);
+        const scale = 0.01 * progress;
+        keycardRef.current.scale.set(scale, scale, scale);
+
         if (progress < 1) {
           frameId = requestAnimationFrame(animateAppear);
-        } else {
-          // policy 모델이 완전히 나타난 후 상태 변경
-          setIsPolicyFullyVisible(true);
         }
       };
       frameId = requestAnimationFrame(animateAppear);
     });
-  }, policyAppearDelay);
 
-  return () => {
-    clearTimeout(timeoutId);
-    if (frameId) cancelAnimationFrame(frameId);
-    setIsPolicyFullyVisible(false);
-    // ❗️문제의 원인: 아래 코드가 항상 실행됨
-    // if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-    //   sceneRef.current.remove(modelObj);
-    // }
-    // policyRef.current = null;
-  };
-}, [isAbeAnimating, isKeycardVisible]);
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+        sceneRef.current.remove(modelObj);
+      }
+      keycardRef.current = null;
+    };
+  }, [isKeycardVisible]);
+
+  // file 모델 생성 및 애니메이션
+  useEffect(() => {
+    if (!isFileVisible) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/file.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, -1, 5);
+      modelObj.rotateY(Math.PI / 2 * -1);
+      sceneRef.current.add(modelObj);
+      fileRef.current = modelObj;
+
+      // 시간 기반 애니메이션
+      const duration = 1000;
+      let startTime = null;
+
+      const animateAppear = (timestamp) => {
+        if (!isMounted.current || !fileRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const scale = 0.03 * progress;
+        fileRef.current.scale.set(scale, scale, scale);
+
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animateAppear);
+        }
+      };
+      frameId = requestAnimationFrame(animateAppear);
+    });
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+        sceneRef.current.remove(modelObj);
+      }
+      fileRef.current = null;
+    };
+  }, [isFileVisible]);
+
+  // 큐브 모델 생성 및 애니메이션
+  useEffect(() => {
+    if (!isCubeVisible) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/cube.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, 0, 0);
+      sceneRef.current.add(modelObj);
+      cubeRef.current = modelObj;
+
+      // 시간 기반 애니메이션
+      const duration = 1000;
+      let startTime = null;
+
+      const animateAppear = (timestamp) => {
+        if (!isMounted.current || !cubeRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const scale = 0.2 * progress;
+        cubeRef.current.scale.set(scale, scale, scale);
+
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animateAppear);
+        }
+      };
+      frameId = requestAnimationFrame(animateAppear);
+    });
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+        sceneRef.current.remove(modelObj);
+      }
+      cubeRef.current = null;
+    };
+  }, [isCubeVisible]);
+
+  // policy 모델 생성 및 애니메이션
+  useEffect(() => {
+    if (!isAbeAnimating) return;
+    if (!isKeycardVisible) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    const policyAppearDelay = ANIMATION_DELAY;
+    const timeoutId = setTimeout(() => {
+      loader.load('/resources/models/policy.glb', (gltf) => {
+        if (!isMounted.current) return;
+        modelObj = gltf.scene;
+        modelObj.scale.set(0, 0, 0);
+        modelObj.position.set(0, -2, 4);
+        modelObj.rotateY(Math.PI / 2 * -1);
+        sceneRef.current.add(modelObj);
+        policyRef.current = modelObj;
+
+        const duration = 1000;
+        let startTime = null;
+        const animateAppear = (timestamp) => {
+          if (!isMounted.current || !policyRef.current) return;
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const scale = 14 * progress;
+          policyRef.current.scale.set(scale, scale, scale);
+          if (progress < 1) {
+            frameId = requestAnimationFrame(animateAppear);
+          } else {
+            setIsPolicyFullyVisible(true);
+          }
+        };
+        frameId = requestAnimationFrame(animateAppear);
+      });
+    }, policyAppearDelay);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (frameId) cancelAnimationFrame(frameId);
+      setIsPolicyFullyVisible(false);
+      // policyRef.current는 클린업에서 일괄 제거
+    };
+  }, [isAbeAnimating, isKeycardVisible]);
 
   // 카메라 애니메이션 함수
   const animateCameraTo = (toPosition, toTarget, duration = CAMERA_ANIMATION_DURATION) => {
     if (!cameraRef.current || !controlsRef.current) return;
-    // 시작점
     const fromPos = cameraRef.current.position.clone();
     const fromTarget = controlsRef.current.target.clone();
     const toPos = new THREE.Vector3(toPosition.x, toPosition.y, toPosition.z);
@@ -302,7 +294,6 @@ const EncryptionVisualizationScene = () => {
       const elapsed = ts - start;
       const t = Math.min(elapsed / duration, 1);
 
-      // 보간
       cameraRef.current.position.lerpVectors(fromPos, toPos, t);
       controlsRef.current.target.lerpVectors(fromTarget, toTgt, t);
       controlsRef.current.update();
@@ -316,8 +307,6 @@ const EncryptionVisualizationScene = () => {
 
   useEffect(() => {
     isMounted.current = true;
-
-    // 초기화
     if (!containerRef.current) return;
 
     // 기존에 생성된 canvas가 있다면 모두 제거 (중복 방지)
@@ -325,19 +314,15 @@ const EncryptionVisualizationScene = () => {
       containerRef.current.removeChild(containerRef.current.firstChild);
     }
 
-    // === GLB 스카이돔(스카이박스) 모델 적용 ===
+    // 스카이박스 모델 적용
     const skyboxLoader = new GLTFLoader();
     skyboxLoader.load(
-      '/resources/models/Inside galaxy HDRI.glb',
+      '/resources/models/night_cityview.glb',
       (gltf) => {
         if (!isMounted.current) return;
         const skyboxScene = gltf.scene;
-        skyboxScene.scale.set(1000, 1000, 1000);
-        skyboxScene.traverse((child) => {
-          if (child.isMesh) {
-            child.material.side = THREE.BackSide;
-          }
-        });
+        skyboxScene.scale.set(4, 4, 4);
+        skyboxScene.position.set(0, 200, 0);
         sceneRef.current.add(skyboxScene);
       },
       undefined,
@@ -349,12 +334,7 @@ const EncryptionVisualizationScene = () => {
     // Scene setup
     sceneRef.current.background = new THREE.Color(0x111111);
 
-    // 축 헬퍼 추가 (길이 10000, 음수/양수 모두 표시됨)
-    const axesHelper = new THREE.AxesHelper(10000);
-    axesHelper.position.set(0, 0, 0);
-    sceneRef.current.add(axesHelper);
-
-    // building.glb 모델을 원점에 추가 (원래 코드에 있던 부분)
+    // building.glb 모델을 원점에 추가
     const buildingLoader = new GLTFLoader();
     buildingLoader.load(
       '/resources/models/building.glb',
@@ -380,7 +360,7 @@ const EncryptionVisualizationScene = () => {
         if (!isMounted.current) return;
         const model = gltf.scene;
         model.scale.set(0.001, 0.001, 0.001);
-        const whiteColor = new THREE.Color(0xffffff);
+        const whiteColor = new THREE.Color(0x888888);
         model.traverse((child) => {
           if (child instanceof THREE.Mesh && child.material) {
             if (Array.isArray(child.material)) {
@@ -404,113 +384,6 @@ const EncryptionVisualizationScene = () => {
       }
     );
 
-    // === 아래 glb 모델들은 필요시 주석 해제해서 추가 가능 ===
-    // key_card, cube, policy, file 등은 scene에 추가하지 않음
-    // const keyLoader = new GLTFLoader();
-    // keyLoader.load(
-    //   '/resources/models/key_card.glb',
-    //   (gltf) => {
-    //     if (!isMounted.current) return;
-    //     const keyModel = gltf.scene;
-    //     keyModel.position.set(0, 0, 0); // 원점에 위치
-    //     keyModel.scale.set(0.01, 0.01, 0.01); // 필요시 크기 조정
-        
-    //     sceneRef.current.add(keyModel);
-    //   },
-    //   undefined,
-    //   (error) => {
-    //     console.error('the_golden_key.glb load error:', error);
-    //   }
-    // );
-
-    // // cube.glb 모델을 원점에 추가
-    // const cubeLoader = new GLTFLoader();
-    // keyLoader.load(
-    //   '/resources/models/cube.glb',
-    //   (gltf) => {
-    //     if (!isMounted.current) return;
-    //     const cubeModel = gltf.scene;
-    //     cubeModel.position.set(0, 0, 20); // 원점에 위치
-    //     cubeModel.scale.set(0.3, 0.3, 0.3); // 필요시 크기 조정
-    //     sceneRef.current.add(cubeModel);
-    //   },
-    //   undefined,
-    //   (error) => {
-    //     console.error('cube.glb load error:', error);
-    //   }
-    // );
-
-    // clipboard.glb 모델을 원점에 추가
-    // const keyLoader = new GLTFLoader();
-    // keyLoader.load(
-    //   '/resources/models/policy.glb',
-    //   (gltf) => {
-    //     if (!isMounted.current) return;
-    //     const policyModel = gltf.scene;
-    //     policyModel.position.set(0, 0, 30); // 원점에 위치
-    //     policyModel.scale.set(70, 70, 70); // 필요시 크기 조정
-    //     policyModel.rotateY(Math.PI / 2 * -1); // 필요시 회전 조정
-    //     sceneRef.current.add(policyModel);
-    //   },
-    //   undefined,
-    //   (error) => {
-    //     console.error('policy.glb load error:', error);
-    //   }
-    // );
-
-    // clipboard.glb 모델을 원점에 추가
-    // const fileLoader = new GLTFLoader();
-    // keyLoader.load(
-    //   '/resources/models/file.glb',
-    //   (gltf) => {
-    //     if (!isMounted.current) return;
-    //     const fileModel = gltf.scene;
-    //     fileModel.position.set(0, 0, 10); // 원점에 위치
-    //     fileModel.scale.set(0.05, 0.05, 0.05); // 필요시 크기 조정
-    //     fileModel.rotateY(Math.PI / 2 * -1); // 필요시 회전 조정
-    //     sceneRef.current.add(fileModel);
-    //   },
-    //   undefined,
-    //   (error) => {
-    //     console.error('file.glb load error:', error);
-    //   }
-    // );
-
-    // // orb.glb 모델을 추가
-    // const orbLoader = new GLTFLoader();
-    // orbLoader.load(
-    //   '/resources/models/orb.glb',
-    //   (gltf) => {
-    //     if (!isMounted.current) return;
-    //     const orbModel = gltf.scene;
-    //     orbModel.position.set(0, 0, 10); // 원점에 위치
-    //     orbModel.scale.set(1, 1, 1); // 필요에 따라 크기 조정
-
-    //     // 하늘색 빛 효과를 위한 PointLight 추가
-    //     const orbLight = new THREE.PointLight(0xadd8e6, 100, 200);
-    //     orbLight.position.set(0, 0, 10);
-    //     orbLight.castShadow = true; // 그림자 활성화
-    //     orbLight.shadow.bias = -0.005;
-    //     orbLight.shadow.mapSize.width = 1024;
-    //     orbLight.shadow.mapSize.height = 1024;
-    //     sceneRef.current.add(orbLight);
-
-    //     // orbModel이 그림자를 받을 수 있도록 설정
-    //     orbModel.traverse((child) => {
-    //       if (child.isMesh) {
-    //         child.castShadow = true;
-    //         child.receiveShadow = true;
-    //       }
-    //     });
-
-    //     sceneRef.current.add(orbModel);
-    //   },
-    //   undefined,
-    //   (error) => {
-    //     console.error('orb.glb load error:', error);
-    //   }
-    // );
-
     // Renderer에서 그림자 활성화
     rendererRef.current = new THREE.WebGLRenderer({
       antialias: true,
@@ -521,20 +394,47 @@ const EncryptionVisualizationScene = () => {
     rendererRef.current.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(rendererRef.current.domElement);
 
-    // 바닥(plane) 추가: 그림자가 투영될 곳이 필요함
+    // 바닥(plane) 추가: 그림자가 투영될 곳
+    const textureLoader = new THREE.TextureLoader();
+    const groundTexture = textureLoader.load('/resources/textures/night_city_topview.jpg');
+    groundTexture.wrapS = THREE.RepeatWrapping;
+    groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set(15, 15);
+
     const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
-    const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x222233, side: THREE.DoubleSide });
+    const groundMaterial = new THREE.MeshPhongMaterial({
+      map: groundTexture,
+      color: 0x555555,
+      side: THREE.DoubleSide,
+    });
     const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.position.y = -60;
     groundMesh.receiveShadow = true;
     sceneRef.current.add(groundMesh);
 
+    // 노란색 작은 구 추가: 도시 야경 효과
+    const cityGlows = [];
+    const numGlows = 1000;
+    for (let i = 0; i < numGlows; i++) {
+      const radius = Math.random() * 1;
+      const glowGeometry = new THREE.SphereGeometry(radius, 16, 16);
+      const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+      glow.position.set(
+        Math.random() * 2000 - 500,
+        -59 + Math.random() * 2,
+        Math.random() * 2000 - 500
+      );
+      sceneRef.current.add(glow);
+      cityGlows.push({ mesh: glow, geometry: glowGeometry, material: glowMaterial });
+    }
+
     // 큐브 클러스터
-    const cubeClusterGeometry = new THREE.BoxGeometry(5, 5, 5); // 큐브 크기
-    const cubeClusterMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // 흰색
+    const cubeClusterGeometry = new THREE.BoxGeometry(5, 5, 5);
+    const cubeClusterMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     let cubeClusterTotal = new THREE.Vector3();
-    for (let i = 0; i < 10; i++) { // 10개 큐브
+    for (let i = 0; i < 10; i++) {
       const x = Math.random() * 20 + 200;
       const y = Math.random() * 20 + 100;
       const z = Math.random() * 20 + 100;
@@ -548,10 +448,10 @@ const EncryptionVisualizationScene = () => {
     cubeClusterCenter.copy(cubeClusterTotal).divideScalar(cubeClusterRef.current.length);
 
     // 구 클러스터
-    const sphereClusterGeometry = new THREE.SphereGeometry(3, 32, 32); // 구 크기
-    const sphereClusterMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // 흰색
+    const sphereClusterGeometry = new THREE.SphereGeometry(3, 32, 32);
+    const sphereClusterMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     let sphereClusterTotal = new THREE.Vector3();
-    for (let i = 0; i < 10; i++) { // 10개 구
+    for (let i = 0; i < 10; i++) {
       const x = Math.random() * 20 + 200;
       const y = Math.random() * 20 + 100;
       const z = Math.random() * 20 - 10;
@@ -563,7 +463,6 @@ const EncryptionVisualizationScene = () => {
       sphereClusterRef.current.push(sphere);
     }
     sphereClusterCenter.copy(sphereClusterTotal).divideScalar(sphereClusterRef.current.length);
-
 
     // === 조명 설정 ===
     const ambientLight = new THREE.AmbientLight(0xffffff, 2);
@@ -624,7 +523,7 @@ const EncryptionVisualizationScene = () => {
     };
   }, []);
 
-  // 버튼 클릭 핸들러
+  // 카메라 초기 위치로 이동
   const handleCameraReset = () => {
     animateCameraTo(initialCameraPosition, initialTarget);
   };
@@ -633,15 +532,13 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isMovingToOrigin) return;
     let frameId;
-    const moveDuration = 1000; // 1초
+    const moveDuration = 1000;
     let startTime = null;
 
-    // 시작 위치 저장
     const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
     const fileStart = fileRef.current ? fileRef.current.position.clone() : null;
-    // 이동 목표 위치를 다르게 지정
-    const keycardTarget = new THREE.Vector3(-2, 0, 0); // 예: 원점 왼쪽
-    const fileTarget = new THREE.Vector3(2, -2, 0);     // 예: 원점 오른쪽
+    const keycardTarget = new THREE.Vector3(-2, 0, 0);
+    const fileTarget = new THREE.Vector3(2, -2, 0);
 
     const animateMove = (timestamp) => {
       if (!isMounted.current) return;
@@ -671,32 +568,26 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isClusterMoving) return;
     let frameId;
-    const moveDuration = 2500; // 이동 속도 느리게 (2.5초)
+    const moveDuration = 2500;
     let startTime = null;
 
-    // 그룹의 모델들
     const models = [keycardRef.current, fileRef.current, cubeRef.current].filter(Boolean);
     if (models.length === 0) return;
 
-    // 그룹의 초기 중심점 계산
     const groupStartCenter = new THREE.Vector3();
     models.forEach(m => groupStartCenter.add(m.position));
     groupStartCenter.divideScalar(models.length);
 
-    // 각 모델의 상대 위치(중심점 기준)
     const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
 
-    // 구 클러스터의 임의 위치 생성
     const clusterTarget = new THREE.Vector3(
       Math.random() * 20 + 200,
       Math.random() * 20 + 100,
       Math.random() * 20 - 10
     );
 
-    // 카메라 이동용: 시작점과 타겟
     const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
-    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30)); // 타겟 위/뒤에서 바라보게
-
+    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30));
     const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
     const controlsTarget = clusterTarget.clone();
 
@@ -706,15 +597,11 @@ const EncryptionVisualizationScene = () => {
       const elapsed = timestamp - startTime;
       const t = Math.min(elapsed / moveDuration, 1);
 
-      // 현재 그룹 중심점 위치 보간
       const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
-
-      // 각 모델을 그룹 내 상대 위치를 유지하며 이동
       models.forEach((m, i) => {
         m.position.copy(currentCenter.clone().add(relativePositions[i]));
       });
 
-      // 카메라도 같이 이동
       if (cameraRef.current && cameraStart && cameraTarget) {
         cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
       }
@@ -726,15 +613,12 @@ const EncryptionVisualizationScene = () => {
       if (t < 1) {
         frameId = requestAnimationFrame(animateMove);
       } else {
-        // 애니메이션이 끝나면 버튼 활성화
         setIsAnimating(false);
         setIsAbeAnimating(false);
 
-        // === 업로드 완료 메시지 표시 ===
         setShowUploadComplete(true);
         setUploadCompleteOpacity(0);
 
-        // 페이드인
         let fadeInStart = null;
         const fadeInDuration = 500;
         const fadeOutDuration = 500;
@@ -748,7 +632,6 @@ const EncryptionVisualizationScene = () => {
           if (t < 1) {
             requestAnimationFrame(fadeIn);
           } else {
-            // 1초 유지 후 페이드아웃
             setTimeout(() => {
               let fadeOutStart = null;
               function fadeOut(ts2) {
@@ -781,7 +664,6 @@ const EncryptionVisualizationScene = () => {
     if (isAbeAnimating) return;
     setIsAbeAnimating(true);
 
-    // 초기화
     setIsKeycardVisible(false);
     setIsFileVisible(false);
     setIsMovingToOrigin(false);
@@ -790,7 +672,6 @@ const EncryptionVisualizationScene = () => {
     setIsAbeMovingToOrigin(false);
     setIsPolicyFullyVisible(false);
 
-    // 키카드, 파일, 큐브, policy 모델 제거
     if (keycardRef.current && sceneRef.current) {
       sceneRef.current.remove(keycardRef.current);
       keycardRef.current = null;
@@ -808,24 +689,19 @@ const EncryptionVisualizationScene = () => {
       policyRef.current = null;
     }
 
-    // 1. 원점 쪽으로 카메라 줌 (초기 애니메이션)
     const zoomPosition = { x: -20, y: 0, z: -10 };
     const zoomTarget = { x: 0, y: 0, z: 0 };
     animateCameraTo(zoomPosition, zoomTarget, 800);
 
-    // 2. 약간의 딜레이 후 키카드 등장
     setTimeout(() => {
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
-      // policy는 useEffect에서 자동 등장
-      // 이동 애니메이션은 policy가 완전히 나타난 후에 실행됨
     }, ANIMATION_DELAY);
   };
 
   // policy가 완전히 나타난 후에만 이동 애니메이션 시작
   useEffect(() => {
     if (!isPolicyFullyVisible) return;
-    // 딜레이를 상수로 관리
     const timeout = setTimeout(() => {
       setIsAbeMovingToOrigin(true);
     }, ANIMATION_DELAY);
@@ -836,15 +712,13 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isAbeMovingToOrigin) return;
     let frameId;
-    const moveDuration = 1000; // 1초
+    const moveDuration = 1000;
     let startTime = null;
 
-    // 시작 위치 저장
     const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
     const policyStart = policyRef.current ? policyRef.current.position.clone() : null;
-    // 이동 목표 위치
-    const keycardTarget = new THREE.Vector3(-2, 0, 0); // 원점 왼쪽
-    const policyTarget = new THREE.Vector3(2, -2, 0);   // 원점 오른쪽
+    const keycardTarget = new THREE.Vector3(-2, 0, 0);
+    const policyTarget = new THREE.Vector3(2, -2, 0);
 
     const animateMove = (timestamp) => {
       if (!isMounted.current) return;
@@ -862,15 +736,12 @@ const EncryptionVisualizationScene = () => {
       if (t < 1) {
         frameId = requestAnimationFrame(animateMove);
       } else {
-        // 이동이 끝난 뒤 약간의 딜레이 후 큐브 등장 애니메이션
         setTimeout(() => {
           setIsCubeVisible(true);
-          // 큐브 등장 후 그룹 이동 애니메이션 시작
-          // 클러스터 이동 딜레이를 상수로 관리
           setTimeout(() => {
             setIsAbeGroupMoving(true);
           }, ANIMATION_DELAY);
-        }, ANIMATION_DELAY); // 큐브 등장 딜레이도 상수로 관리
+        }, ANIMATION_DELAY);
       }
     };
     frameId = requestAnimationFrame(animateMove);
@@ -884,32 +755,26 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isAbeGroupMoving) return;
     let frameId;
-    const moveDuration = 2500; // 2.5초
+    const moveDuration = 2500;
     let startTime = null;
 
-    // 이동 대상 위치: 큐브 클러스터의 임의 위치
     const clusterTarget = new THREE.Vector3(
       Math.random() * 20 + 200,
       Math.random() * 20 + 100,
       Math.random() * 20 + 100
     );
 
-    // 그룹 모델들
     const models = [keycardRef.current, policyRef.current, cubeRef.current].filter(Boolean);
     if (models.length === 0) return;
 
-    // 그룹의 초기 중심점 계산
     const groupStartCenter = new THREE.Vector3();
     models.forEach(m => groupStartCenter.add(m.position));
     groupStartCenter.divideScalar(models.length);
 
-    // 각 모델의 상대 위치(중심점 기준)
     const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
 
-    // 카메라 이동용: 시작점과 타겟
     const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
-    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30)); // 타겟 위/뒤에서 바라보게
-
+    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30));
     const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
     const controlsTarget = clusterTarget.clone();
 
@@ -919,15 +784,11 @@ const EncryptionVisualizationScene = () => {
       const elapsed = timestamp - startTime;
       const t = Math.min(elapsed / moveDuration, 1);
 
-      // 현재 그룹 중심점 위치 보간
       const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
-
-      // 각 모델을 그룹 내 상대 위치를 유지하며 이동
       models.forEach((m, i) => {
         m.position.copy(currentCenter.clone().add(relativePositions[i]));
       });
 
-      // 카메라도 같이 이동
       if (cameraRef.current && cameraStart && cameraTarget) {
         cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
       }
@@ -942,11 +803,9 @@ const EncryptionVisualizationScene = () => {
         setIsAbeGroupMoving(false);
         setIsAbeAnimating(false);
 
-        // === CP-ABE 업로드 완료 메시지 표시 ===
         setShowAbeUploadComplete(true);
         setAbeUploadCompleteOpacity(0);
 
-        // 페이드인/아웃
         let fadeInStart = null;
         const fadeInDuration = 500;
         const fadeOutDuration = 500;
@@ -960,7 +819,6 @@ const EncryptionVisualizationScene = () => {
           if (t < 1) {
             requestAnimationFrame(fadeIn);
           } else {
-            // 1초 유지 후 페이드아웃
             setTimeout(() => {
               let fadeOutStart = null;
               function fadeOut(ts2) {
@@ -988,35 +846,34 @@ const EncryptionVisualizationScene = () => {
     };
   }, [isAbeGroupMoving]);
 
-  // === 반투명 구 추가 ===
+  // 반투명 구 추가
   useEffect(() => {
     if (!sceneRef.current) return;
 
-    // 첫 번째 구: (220, 120, 120)
-    const sphere1Geometry = new THREE.SphereGeometry(50, 48, 48);
+    // 첫 번째 구: (220, 120, 110)
+    const sphere1Geometry = new THREE.SphereGeometry(25, 48, 48);
     const sphere1Material = new THREE.MeshBasicMaterial({
-      color: 0x00bfff, // 하늘색 계열
+      color: 0x00bfff,
       transparent: true,
       opacity: 0.25,
       depthWrite: false,
     });
     const sphere1 = new THREE.Mesh(sphere1Geometry, sphere1Material);
-    sphere1.position.set(220, 120, 120);
+    sphere1.position.set(210, 110, 110);
     sceneRef.current.add(sphere1);
 
-    // 두 번째 구: (220, 120, 10)
-    const sphere2Geometry = new THREE.SphereGeometry(50, 48, 48);
+    // 두 번째 구: (220, 120, 0)
+    const sphere2Geometry = new THREE.SphereGeometry(25, 48, 48);
     const sphere2Material = new THREE.MeshBasicMaterial({
-      color: 0xffa500, // 주황색 계열
+      color: 0xffa500,
       transparent: true,
       opacity: 0.25,
       depthWrite: false,
     });
     const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
-    sphere2.position.set(220, 120, 10);
+    sphere2.position.set(210, 110, 0);
     sceneRef.current.add(sphere2);
 
-    // 클린업
     return () => {
       sceneRef.current.remove(sphere1);
       sceneRef.current.remove(sphere2);
@@ -1096,14 +953,16 @@ const EncryptionVisualizationScene = () => {
           </div>
         </div>
       )}
-      <div style={{
-        position: 'absolute',
-        left: 20,
-        bottom: 20,
-        zIndex: 10,
-        display: 'flex',
-        gap: 10,
-      }}>
+      <div
+        style={{
+          position: 'absolute',
+          left: 20,
+          bottom: 20,
+          zIndex: 10,
+          display: 'flex',
+          gap: 10,
+        }}
+      >
         <button
           style={{
             padding: '10px 18px',
