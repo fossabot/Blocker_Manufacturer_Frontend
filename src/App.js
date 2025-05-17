@@ -55,110 +55,103 @@ function App() {
 
   const handleDeploy = useCallback(async (skipDetails, setIsDeploying) => {
 
-      // skipDetails 값에 따라 다른 경로로 이동
-    if (skipDetails) {
-      navigate('/complete');
-    } else {
-      navigate('/encryption-visualization');
+    console.log("App.js: Deploy button clicked with final data:", deploymentData);
+    console.log("Skip Details:", skipDetails);
+    console.log("API Base URL:", process.env.REACT_APP_API_BASE_URL);
+
+    if (!deploymentData.uploadedFile) {
+      alert('업로드된 파일이 없습니다.');
+      setIsDeploying(false);
+      return;
+    }
+    if (!deploymentData.updateName) {
+      alert('버전 이름이 필요합니다.');
+      setIsDeploying(false);
+      return;
+    }
+    if (!deploymentData.description) {
+      alert('설명이 필요합니다.');
+      setIsDeploying(false);
+      return;
+    }
+    if (!deploymentData.price) {
+      alert('가격이 필요합니다.');
+      setIsDeploying(false);
+      return;
     }
 
-//     console.log("App.js: Deploy button clicked with final data:", deploymentData);
-//     console.log("Skip Details:", skipDetails);
-//     console.log("API Base URL:", process.env.REACT_APP_API_BASE_URL);
+    const policy = {
+      model: deploymentData.policyConditions.modelName.length > 0 ? deploymentData.policyConditions.modelName.join(' OR ') : '',
+      serial: deploymentData.policyConditions.serialNumber.length > 0 ? deploymentData.policyConditions.serialNumber.join(' OR ') : '',
+      manufacture: deploymentData.policyConditions.manufactureDate.length > 0 ? deploymentData.policyConditions.manufactureDate.join(' OR ') : '',
+      option: deploymentData.policyConditions.optionType.length > 0 ? deploymentData.policyConditions.optionType.join(' OR ') : '',
+    };
+    const policyString = JSON.stringify(policy);
 
-//     if (!deploymentData.uploadedFile) {
-//       alert('업로드된 파일이 없습니다.');
-//       setIsDeploying(false);
-//       return;
-//     }
-//     if (!deploymentData.updateName) {
-//       alert('버전 이름이 필요합니다.');
-//       setIsDeploying(false);
-//       return;
-//     }
-//     if (!deploymentData.description) {
-//       alert('설명이 필요합니다.');
-//       setIsDeploying(false);
-//       return;
-//     }
-//     if (!deploymentData.price) {
-//       alert('가격이 필요합니다.');
-//       setIsDeploying(false);
-//       return;
-//     }
+    console.log("Request Data:", {
+      file: {
+        name: deploymentData.uploadedFile?.name,
+        type: deploymentData.uploadedFile?.type,
+        size: deploymentData.uploadedFile?.size,
+      },
+      version: deploymentData.updateName,
+      description: deploymentData.description,
+      price: deploymentData.price,
+      policy: policy,
+    });
 
-//     const policy = {
-//       model: deploymentData.policyConditions.modelName.length > 0 ? deploymentData.policyConditions.modelName.join(' OR ') : '',
-//       serial: deploymentData.policyConditions.serialNumber.length > 0 ? deploymentData.policyConditions.serialNumber.join(' OR ') : '',
-//       manufacture: deploymentData.policyConditions.manufactureDate.length > 0 ? deploymentData.policyConditions.manufactureDate.join(' OR ') : '',
-//       option: deploymentData.policyConditions.optionType.length > 0 ? deploymentData.policyConditions.optionType.join(' OR ') : '',
-//     };
-//     const policyString = JSON.stringify(policy);
+    try {
+      const formData = new FormData();
+      formData.append('file', deploymentData.uploadedFile);
+      formData.append('version', deploymentData.updateName);
+      formData.append('description', deploymentData.description);
+      formData.append('price', deploymentData.price);
+      formData.append('policy', policyString);
 
-//     console.log("Request Data:", {
-//       file: {
-//         name: deploymentData.uploadedFile?.name,
-//         type: deploymentData.uploadedFile?.type,
-//         size: deploymentData.uploadedFile?.size,
-//       },
-//       version: deploymentData.updateName,
-//       description: deploymentData.description,
-//       price: deploymentData.price,
-//       policy: policy,
-//     });
+      console.log("FormData Contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+      }
 
-//     try {
-//       const formData = new FormData();
-//       formData.append('file', deploymentData.uploadedFile);
-//       formData.append('version', deploymentData.updateName);
-//       formData.append('description', deploymentData.description);
-//       formData.append('price', deploymentData.price);
-//       formData.append('policy', policyString);
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+      const response = await axios.post(`${apiBaseUrl}/api/manufacturer/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'accept': 'application/json',
+        },
+      });
 
-//       console.log("FormData Contents:");
-//       for (let [key, value] of formData.entries()) {
-//         console.log(`  ${key}: ${value}`);
-//       }
+      console.log('Deployment successful:', response.data);
+      // alert('배포가 완료되었습니다!');
+      setIsDeploying(false);
 
-//       const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
-//       const response = await axios.post(`${apiBaseUrl}/api/manufacturer/upload`, formData, {
-//         headers: {
-//           'Content-Type': 'multipart/form-data',
-//           'accept': 'application/json',
-//         },
-//       });
+      setDeploymentData({
+        uploadedFileName: null,
+        uploadedFile: null,
+        updateName: '',
+        price: '',
+        description: '',
+        policyConditions: {
+          modelName: [],
+          serialNumber: [],
+          manufactureDate: [],
+          optionType: [],
+        },
+      });
 
-//       console.log('Deployment successful:', response.data);
-//       alert('배포가 완료되었습니다!');
-//       setIsDeploying(false);
-
-//       setDeploymentData({
-//         uploadedFileName: null,
-//         uploadedFile: null,
-//         updateName: '',
-//         price: '',
-//         description: '',
-//         policyConditions: {
-//           modelName: [],
-//           serialNumber: [],
-//           manufactureDate: [],
-//           optionType: [],
-//         },
-//       });
-
-//       // skipDetails 값에 따라 다른 경로로 이동
-//       if (skipDetails) {
-//         navigate('/complete');
-//       } else {
-//         navigate('/');
-// }
-//     } catch (error) {
-//       console.error('Deployment failed:', error);
-//       console.log('Server error response:', error.response?.data);
-//       const errorMessage = error.response?.data?.message || error.message;
-//       alert(`배포 중 오류가 발생했습니다: ${errorMessage}`);
-//       setIsDeploying(false);
-//     }
+      // skipDetails 값에 따라 다른 경로로 이동
+      if (skipDetails) {
+        navigate('/complete');
+      } else {
+        navigate('/encryption-visualization');
+}
+    } catch (error) {
+      console.error('Deployment failed:', error);
+      console.log('Server error response:', error.response?.data);
+      const errorMessage = error.response?.data?.message || error.message;
+      alert(`배포 중 오류가 발생했습니다: ${errorMessage}`);
+      setIsDeploying(false);
+    }
   }, [deploymentData, navigate]);
 
   return (

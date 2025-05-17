@@ -12,4 +12,7 @@ services:
       - /app/node_modules # node_modules는 호스트와 공유하지 않음
     environment:
       - NODE_ENV=development
-    command: npm start
+      - CHOKIDAR_USEPOLLING=1
+    # command: nodemon --watch src --ext js,jsx,ts,tsx,json,css src/index.js
+    stdin_open: true
+    tty: true

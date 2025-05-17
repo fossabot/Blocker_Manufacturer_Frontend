@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useNavigate } from 'react-router-dom';
 
 // 저장해둔 초기 카메라 위치
 const initialCameraPosition = { x: -70, y: -20, z: -35 };
@@ -41,6 +42,7 @@ const EncryptionVisualizationScene = () => {
   const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false);
   const labelRendererRef = useRef(null);
   const cubeRef = useRef(null);
+  const navigate = useNavigate();
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
@@ -1013,6 +1015,27 @@ const EncryptionVisualizationScene = () => {
           CP-ABE 암호문 업로드
         </button>
       </div>
+      {/* 오른쪽 아래 나가기 버튼 */}
+      <button
+        style={{
+          position: 'fixed',
+          right: 32,
+          bottom: 32,
+          zIndex: 100,
+          padding: '14px 28px',
+          fontSize: '1.1rem',
+          borderRadius: '10px',
+          border: 'none',
+          background: '#ff5252',
+          color: '#fff',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.18)',
+          cursor: 'pointer',
+        }}
+        onClick={() => navigate('/complete')}
+      >
+        나가기
+      </button>
     </div>
   );
 };
