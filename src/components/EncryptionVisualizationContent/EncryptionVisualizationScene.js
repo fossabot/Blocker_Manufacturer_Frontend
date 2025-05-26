@@ -66,6 +66,10 @@ const EncryptionVisualizationScene = () => {
   // === CP-ABE 업로드 애니메이션 단계 ===
   const [abeStep, setAbeStep] = useState(0); // 0: idle, 1: keycard, 2: policy, 3: cert, 4: groupMove, 5: cube, 6: clusterMove
 
+  // 추가: 인증서 가시성 및 이동 상태
+  const [isCertificateVisible, setIsCertificateVisible] = useState(false);
+  const [isCertificateMoving, setIsCertificateMoving] = useState(false);
+
   // 업데이트 파일 업로드 애니메이션 시작
   const handleUploadClick = () => {
     if (isAnimating) return;
@@ -77,8 +81,10 @@ const EncryptionVisualizationScene = () => {
     setIsMovingToOrigin(false);
     setIsCubeVisible(false);
     setIsClusterMoving(false);
+    setIsCertificateVisible(false);
+    setIsCertificateMoving(false);
 
-    // 키카드, 파일, 큐브 모델 제거
+    // 키카드, 파일, 큐브, 인증서 모델 제거
     if (keycardRef.current && sceneRef.current) {
       sceneRef.current.remove(keycardRef.current);
       keycardRef.current = null;
@@ -90,6 +96,10 @@ const EncryptionVisualizationScene = () => {
     if (cubeRef.current && sceneRef.current) {
       sceneRef.current.remove(cubeRef.current);
       cubeRef.current = null;
+    }
+    if (certificateRef.current && sceneRef.current) {
+      sceneRef.current.remove(certificateRef.current);
+      certificateRef.current = null;
     }
 
     // 1. 원점 쪽으로 카메라 줌 (초기 애니메이션)
@@ -111,13 +121,20 @@ const EncryptionVisualizationScene = () => {
           setTimeout(() => {
             setIsCubeVisible(true);
 
+            // === 인증서 등장 3초 ===
             setTimeout(() => {
-              setIsCertificateEmerging(true);
+              setIsCertificateVisible(true);
+              // === 인증서 등장 애니메이션이 끝난 후(3초 후) z축 이동 시작 ===
               setTimeout(() => {
-                setIsClusterMoving(true);
-                setIsCertificateEmerging(false);
-              }, ANIMATION_DELAY); // 인증서 애니메이션 끝나고 클러스터 이동
-            }, ANIMATION_DELAY);
+                setIsCertificateMoving(true);
+                // === 2초간 이동 후 2초 대기 ===
+                setTimeout(() => {
+                  setIsClusterMoving(true);
+                  setIsCertificateVisible(false);
+                  setIsCertificateMoving(false);
+                }, 6000); // 6초 대기
+              }, 2000); // 2초간 z축 이동
+            }, 3000); // 3초간 등장
           }, ANIMATION_DELAY);
         }, ANIMATION_DELAY);
       }, ANIMATION_DELAY);
@@ -417,7 +434,7 @@ const EncryptionVisualizationScene = () => {
     // MotionV2 레이블
     const labelDiv = document.createElement('div');
     labelDiv.className = 'label';
-    labelDiv.textContent = 'MotionV2';
+    labelDiv.textContent = '업데이트 파일';
     labelDiv.style.color = '#fff';
     labelDiv.style.fontSize = '14px';
     labelDiv.style.fontWeight = 'bold';
@@ -493,7 +510,7 @@ const EncryptionVisualizationScene = () => {
       // 인증서 레이블
       const certLabelDiv = document.createElement('div');
       certLabelDiv.className = 'label';
-      certLabelDiv.textContent = '인증서';
+      certLabelDiv.textContent = 'ECDSA 인증서';
       certLabelDiv.style.color = '#fff';
       certLabelDiv.style.fontSize = '14px';
       certLabelDiv.style.fontWeight = 'bold';
@@ -1125,6 +1142,75 @@ const EncryptionVisualizationScene = () => {
       certificateRef.current = null;
     };
   }, [isAbeCertificateEmerging]);
+
+  // 인증서 모델 생성 및 애니메이션 (업데이트 파일 업로드용)
+  useEffect(() => {
+    if (!isCertificateVisible) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/certificate.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, 0, 0);
+      modelObj.rotateY(Math.PI / 2 * -1);
+      sceneRef.current.add(modelObj);
+      certificateRef.current = modelObj;
+      const duration = 3000; // 3초 등장
+      let startTime = null;
+      const startScale = 0;
+      const endScale = 2;
+      const animateEmergence = (timestamp) => {
+        if (!isMounted.current || !certificateRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const scale = startScale + (endScale - startScale) * t;
+        certificateRef.current.scale.set(scale, scale, scale);
+        if (t < 1) {
+          frameId = requestAnimationFrame(animateEmergence);
+        }
+      };
+      frameId = requestAnimationFrame(animateEmergence);
+    });
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (certificateRef.current && sceneRef.current) {
+        sceneRef.current.remove(certificateRef.current);
+      }
+      certificateRef.current = null;
+    };
+  }, [isCertificateVisible]);
+
+  // 인증서 이동 애니메이션 (업데이트 파일 업로드용)
+  useEffect(() => {
+    if (!isCertificateMoving) return;
+    let frameId;
+    const moveDuration = 3000; // 2초간 z축 이동
+    let startTime = null;
+    const start = certificateRef.current ? certificateRef.current.position.clone() : null;
+    // 목적지는 (0,0,7)
+    const target = new THREE.Vector3(0, 0, 7);
+    const animateMove = (timestamp) => {
+      if (!isMounted.current) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / moveDuration, 1);
+      if (certificateRef.current && start) {
+        certificateRef.current.position.lerpVectors(start, target, t);
+      }
+      if (t < 1) {
+        frameId = requestAnimationFrame(animateMove);
+      } else {
+        // 이동 후 2초 대기 후 setIsClusterMoving(true)에서 제거됨
+      }
+    };
+    frameId = requestAnimationFrame(animateMove);
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [isCertificateMoving]);
 
   // 반투명 구 추가
   useEffect(() => {
