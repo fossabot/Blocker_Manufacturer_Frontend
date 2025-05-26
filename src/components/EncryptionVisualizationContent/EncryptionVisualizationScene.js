@@ -368,8 +368,8 @@ const EncryptionVisualizationScene = () => {
   keycardLoader.load('/resources/models/key_card.glb', (gltf) => {
     if (!isMounted.current) return;
     const model = gltf.scene;
-    model.scale.set(0.01, 0.01, 0.01);
-    model.position.set(-15, -48, 0); // 건물 아래, x = -15
+    model.scale.set(0.02, 0.02, 0.02);
+    model.position.set(0, -29, 40); // 건물 아래, x = -15
     sceneRef.current.add(model);
     staticModels.keycard = model;
 
@@ -384,7 +384,7 @@ const EncryptionVisualizationScene = () => {
     labelDiv.style.padding = '2px 6px';
     labelDiv.style.borderRadius = '4px';
     const label = new CSS2DObject(labelDiv);
-    label.position.set(-15, -46, 0); // 모델 위쪽
+    label.position.set(0, -20, 40); // 모델 위쪽
     sceneRef.current.add(label);
   });
 
@@ -393,8 +393,8 @@ const EncryptionVisualizationScene = () => {
   fileLoader.load('/resources/models/file.glb', (gltf) => {
     if (!isMounted.current) return;
     const model = gltf.scene;
-    model.scale.set(0.03, 0.03, 0.03);
-    model.position.set(-5, -48, 0); // x = -5
+    model.scale.set(0.04, 0.04, 0.04);
+    model.position.set(0, -30, 60); // x = -5
     model.rotateY(Math.PI / 2 * -1);
     sceneRef.current.add(model);
     staticModels.file = model;
@@ -410,7 +410,7 @@ const EncryptionVisualizationScene = () => {
     labelDiv.style.padding = '2px 6px';
     labelDiv.style.borderRadius = '4px';
     const label = new CSS2DObject(labelDiv);
-    label.position.set(-5, -46, 0); // 모델 위쪽
+    label.position.set(0, -20, 60); // 모델 위쪽
     sceneRef.current.add(label);
   });
 
@@ -419,8 +419,8 @@ const EncryptionVisualizationScene = () => {
   policyLoader.load('/resources/models/policy.glb', (gltf) => {
     if (!isMounted.current) return;
     const model = gltf.scene;
-    model.scale.set(14, 14, 14);
-    model.position.set(5, -48, 0); // x = 5
+    model.scale.set(20, 20, 20);
+    model.position.set(0, -31, 80); // x = 5
     model.rotateY(Math.PI / 2 * -1);
     sceneRef.current.add(model);
     staticModels.policy = model;
@@ -436,7 +436,7 @@ const EncryptionVisualizationScene = () => {
     labelDiv.style.padding = '2px 6px';
     labelDiv.style.borderRadius = '4px';
     const label = new CSS2DObject(labelDiv);
-    label.position.set(5, -46, 0); // 모델 위쪽
+    label.position.set(0, -20, 80); // 모델 위쪽
     sceneRef.current.add(label);
   });
 
@@ -445,8 +445,8 @@ const EncryptionVisualizationScene = () => {
   cubeLoader.load('/resources/models/cube.glb', (gltf) => {
     if (!isMounted.current) return;
     const model = gltf.scene;
-    model.scale.set(0.2, 0.2, 0.2);
-    model.position.set(15, -48, 0); // x = 15
+    model.scale.set(0.25, 0.25, 0.25);
+    model.position.set(0, -29, 100); // x = 15
     sceneRef.current.add(model);
     staticModels.cube = model;
 
@@ -461,9 +461,34 @@ const EncryptionVisualizationScene = () => {
     labelDiv.style.padding = '2px 6px';
     labelDiv.style.borderRadius = '4px';
     const label = new CSS2DObject(labelDiv);
-    label.position.set(15, -46, 0); // 모델 위쪽
+    label.position.set(0, -20, 100); // 모델 위쪽
     sceneRef.current.add(label);
   });
+
+      // certificate.glb ECDSA 인증서 추가
+    const certLoader = new GLTFLoader();
+    certLoader.load('/resources/models/certificate.glb', (certGltf) => {
+      if (!isMounted.current) return;
+      const certModel = certGltf.scene;
+      certModel.scale.set(3, 3, 3);
+      certModel.position.set(0, -29, 120); // 오른쪽 옆에 배치
+      certModel.rotateY(Math.PI / 2 * -1);
+      sceneRef.current.add(certModel);
+
+      // 인증서 레이블
+      const certLabelDiv = document.createElement('div');
+      certLabelDiv.className = 'label';
+      certLabelDiv.textContent = '인증서';
+      certLabelDiv.style.color = '#fff';
+      certLabelDiv.style.fontSize = '14px';
+      certLabelDiv.style.fontWeight = 'bold';
+      certLabelDiv.style.background = 'rgba(0,0,0,0.5)';
+      certLabelDiv.style.padding = '2px 6px';
+      certLabelDiv.style.borderRadius = '4px';
+      const certLabel = new CSS2DObject(certLabelDiv);
+      certLabel.position.set(0, -20, 120); // 인증서 위쪽
+      sceneRef.current.add(certLabel);
+    });
 
     // city 모델 추가
     const gltfLoader = new GLTFLoader();
