@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { useNavigate } from 'react-router-dom';
 
 // 저장해둔 초기 카메라 위치
@@ -490,12 +491,48 @@ const EncryptionVisualizationScene = () => {
     controlsRef.current.target.set(initialTarget.x, initialTarget.y, initialTarget.z);
     cameraRef.current.lookAt(0, 0, 0);
 
+    // === CSS2DRenderer 추가 ===
+    labelRendererRef.current = new CSS2DRenderer();
+    labelRendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    labelRendererRef.current.domElement.style.position = 'absolute';
+    labelRendererRef.current.domElement.style.top = '0px';
+    labelRendererRef.current.domElement.style.pointerEvents = 'none';
+    containerRef.current.appendChild(labelRendererRef.current.domElement);
+
+    // === 레이블 생성 ===
+    // 큐브 클러스터 레이블
+    const cubeLabelDiv = document.createElement('div');
+    cubeLabelDiv.className = 'label';
+    cubeLabelDiv.textContent = '블록체인 네트워크';
+    cubeLabelDiv.style.color = '#fff';
+    cubeLabelDiv.style.fontWeight = 'bold';
+    cubeLabelDiv.style.background = 'rgba(0,0,0,0.5)';
+    cubeLabelDiv.style.padding = '4px 10px';
+    cubeLabelDiv.style.borderRadius = '8px';
+    const cubeLabel = new CSS2DObject(cubeLabelDiv);
+    cubeLabel.position.set(220, 170, 120);
+    sceneRef.current.add(cubeLabel);
+
+    // 구 클러스터 레이블
+    const sphereLabelDiv = document.createElement('div');
+    sphereLabelDiv.className = 'label';
+    sphereLabelDiv.textContent = 'IPFS 저장소';
+    sphereLabelDiv.style.color = '#fff';
+    sphereLabelDiv.style.fontWeight = 'bold';
+    sphereLabelDiv.style.background = 'rgba(0,0,0,0.5)';
+    sphereLabelDiv.style.padding = '4px 10px';
+    sphereLabelDiv.style.borderRadius = '8px';
+    const sphereLabel = new CSS2DObject(sphereLabelDiv);
+    sphereLabel.position.set(220, 170, -10);
+    sceneRef.current.add(sphereLabel);
+
     // 애니메이션 루프
     const animate = () => {
       if (!isMounted.current) return;
       animationFrameId.current = requestAnimationFrame(animate);
       controlsRef.current?.update();
       rendererRef.current?.render(sceneRef.current, cameraRef.current);
+      labelRendererRef.current?.render(sceneRef.current, cameraRef.current);
     };
     animate();
 
@@ -505,6 +542,7 @@ const EncryptionVisualizationScene = () => {
       cameraRef.current.aspect = window.innerWidth / window.innerHeight;
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+      labelRendererRef.current.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', handleResize);
 
@@ -520,6 +558,12 @@ const EncryptionVisualizationScene = () => {
         if (rendererRef.current.domElement.parentNode === containerRef.current) {
           containerRef.current.removeChild(rendererRef.current.domElement);
         }
+      }
+      if (labelRendererRef.current) {
+        if (labelRendererRef.current.domElement.parentNode === containerRef.current) {
+          containerRef.current.removeChild(labelRendererRef.current.domElement);
+        }
+        labelRendererRef.current = null;
       }
       sceneRef.current.clear();
     };
