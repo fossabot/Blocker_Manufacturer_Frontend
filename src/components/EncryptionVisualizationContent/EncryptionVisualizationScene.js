@@ -59,6 +59,13 @@ const EncryptionVisualizationScene = () => {
   const [isCertificateEmerging, setIsCertificateEmerging] = useState(false);
   const certificateRef = useRef(null);
 
+  // === CP-ABE 정책 등장 후 인증서 등장 애니메이션 ===
+  const [isAbeCertificateEmerging, setIsAbeCertificateEmerging] = useState(false);
+  const abeCertificateRef = useRef(null);
+
+  // === CP-ABE 업로드 애니메이션 단계 ===
+  const [abeStep, setAbeStep] = useState(0); // 0: idle, 1: keycard, 2: policy, 3: cert, 4: groupMove, 5: cube, 6: clusterMove
+
   // 업데이트 파일 업로드 애니메이션 시작
   const handleUploadClick = () => {
     if (isAnimating) return;
@@ -852,6 +859,7 @@ const EncryptionVisualizationScene = () => {
   const handleAbeUploadClick = () => {
     if (isAbeAnimating) return;
     setIsAbeAnimating(true);
+    setAbeStep(0); // 카메라 이동부터 시작
 
     setIsKeycardVisible(false);
     setIsFileVisible(false);
@@ -860,6 +868,8 @@ const EncryptionVisualizationScene = () => {
     setIsClusterMoving(false);
     setIsAbeMovingToOrigin(false);
     setIsPolicyFullyVisible(false);
+    setIsAbeGroupMoving(false);
+    setIsAbeCertificateEmerging(false);
 
     if (keycardRef.current && sceneRef.current) {
       sceneRef.current.remove(keycardRef.current);
@@ -877,181 +887,219 @@ const EncryptionVisualizationScene = () => {
       sceneRef.current.remove(policyRef.current);
       policyRef.current = null;
     }
+    if (certificateRef.current && sceneRef.current) {
+      sceneRef.current.remove(certificateRef.current);
+      certificateRef.current = null;
+    }
 
+    // 카메라 이동 먼저
     const zoomPosition = { x: -20, y: 0, z: -10 };
     const zoomTarget = { x: 0, y: 0, z: 0 };
     animateCameraTo(zoomPosition, zoomTarget, 800);
-
-    setTimeout(() => {
-      setIsKeycardVisible(true);
-      setKeycardAppearProgress(0);
-    }, ANIMATION_DELAY);
+    setTimeout(() => setAbeStep(1), 800); // 카메라 이동 후 다음 단계
   };
 
-  // policy가 완전히 나타난 후에만 이동 애니메이션 시작
+  // 단계별 애니메이션 순차 실행
+  useEffect(() => {
+    if (!isAbeAnimating) return;
+    if (abeStep === 1) {
+      // 대칭키, 정책, 인증서 모델이 등장할 때 x, z 간격을 일정하게 조정
+      // 등장 애니메이션에서 위치 지정
+      const positions = [
+        { x: 0, y: 0, z: -1.5 }, // keycard
+        { x: 0,    y: -2, z: 0    }, // policy
+        { x: 0,  y: 0, z: 1.5  }, // certificate
+      ];
+      setIsKeycardVisible(true);
+      setKeycardAppearProgress(0);
+      if (keycardRef.current) keycardRef.current.position.set(positions[0].x, positions[0].y, positions[0].z);
+      if (policyRef.current) policyRef.current.position.set(positions[1].x, positions[1].y, positions[1].z);
+      if (certificateRef.current) certificateRef.current.position.set(positions[2].x, positions[2].y, positions[2].z);
+      const t = setTimeout(() => setAbeStep(2), ANIMATION_DELAY);
+      return () => clearTimeout(t);
+    }
+    if (abeStep === 2) {
+      setIsPolicyFullyVisible(true);
+      const t = setTimeout(() => setAbeStep(3), ANIMATION_DELAY);
+      return () => clearTimeout(t);
+    }
+    if (abeStep === 3) {
+      setIsAbeCertificateEmerging(true);
+      const t = setTimeout(() => setAbeStep(4), ANIMATION_DELAY);
+      return () => clearTimeout(t);
+    }
+    if (abeStep === 4) {
+      setAbeStep(5); // 바로 다음 단계로 (group move)
+    }
+    if (abeStep === 5) {
+      // 세 모델(키카드, 정책, 인증서) x값만 다르게 하여 원점(y,z=0) 근처로 모으기, 정책 모델은 y값 유지
+      let frameId;
+      const moveDuration = 1000;
+      let startTime = null;
+      const xTargets = [-1.5, 0, 1.5]; // keycard, policy, certificate x 위치
+      const models = [certificateRef.current, policyRef.current, keycardRef.current].filter(Boolean);
+      if (models.length !== 3) return;
+      const startPositions = models.map(m => m.position.clone());
+      // 정책 모델의 y값을 그대로 유지
+      const policyY = startPositions[1].y;
+      const targetPositions = [
+        new THREE.Vector3(xTargets[0], 0, 0),
+        new THREE.Vector3(xTargets[1], policyY, 0), // 정책 모델만 y값 유지
+        new THREE.Vector3(xTargets[2], 0, 0),
+      ];
+      const animateMove = (timestamp) => {
+        if (!isMounted.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const t = Math.min(elapsed / moveDuration, 1);
+        models.forEach((m, i) => {
+          m.position.lerpVectors(startPositions[i], targetPositions[i], t);
+        });
+        if (t < 1) {
+          frameId = requestAnimationFrame(animateMove);
+        } else {
+          setAbeStep(6); // 큐브 등장
+        }
+      };
+      frameId = requestAnimationFrame(animateMove);
+      return () => { if (frameId) cancelAnimationFrame(frameId); };
+    }
+    if (abeStep === 6) {
+      setIsCubeVisible(true);
+      const t = setTimeout(() => setAbeStep(7), ANIMATION_DELAY);
+      return () => clearTimeout(t);
+    }
+    if (abeStep === 7) {
+      // 네 모델(키카드, 정책, 인증서, 큐브) 블록체인 네트워크로 이동
+      let frameId;
+      const moveDuration = 2500;
+      let startTime = null;
+      const models = [keycardRef.current, policyRef.current, certificateRef.current, cubeRef.current].filter(Boolean);
+      if (models.length === 0) return;
+      const groupStartCenter = new THREE.Vector3();
+      models.forEach(m => groupStartCenter.add(m.position));
+      groupStartCenter.divideScalar(models.length);
+      const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
+      const clusterTarget = new THREE.Vector3(
+        Math.random() * 20 + 200,
+        Math.random() * 20 + 100,
+        Math.random() * 20 - 10
+      );
+      const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
+      const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30));
+      const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
+      const controlsTarget = clusterTarget.clone();
+      const animateMove = (timestamp) => {
+        if (!isMounted.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const t = Math.min(elapsed / moveDuration, 1);
+        const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
+        models.forEach((m, i) => {
+          m.position.copy(currentCenter.clone().add(relativePositions[i]));
+        });
+        if (cameraRef.current && cameraStart && cameraTarget) {
+          cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
+        }
+        if (controlsRef.current && controlsStart && controlsTarget) {
+          controlsRef.current.target.lerpVectors(controlsStart, controlsTarget, t);
+          controlsRef.current.update();
+        }
+        if (t < 1) {
+          frameId = requestAnimationFrame(animateMove);
+        } else {
+          setIsAbeAnimating(false);
+          setShowAbeUploadComplete(true);
+          setAbeUploadCompleteOpacity(0);
+          let fadeInStart = null;
+          const fadeInDuration = 500;
+          const fadeOutDuration = 500;
+          const showDuration = 1000;
+          function fadeIn(ts) {
+            if (!fadeInStart) fadeInStart = ts;
+            const elapsed = ts - fadeInStart;
+            const t = Math.min(elapsed / fadeInDuration, 1);
+            setAbeUploadCompleteOpacity(t);
+            if (t < 1) {
+              requestAnimationFrame(fadeIn);
+            } else {
+              setTimeout(() => {
+                let fadeOutStart = null;
+                function fadeOut(ts2) {
+                  if (!fadeOutStart) fadeOutStart = ts2;
+                  const elapsed2 = ts2 - fadeOutStart;
+                  const t2 = Math.min(elapsed2 / fadeOutDuration, 1);
+                  setAbeUploadCompleteOpacity(1 - t2);
+                  if (t2 < 1) {
+                    requestAnimationFrame(fadeOut);
+                  } else {
+                    setShowAbeUploadComplete(false);
+                  }
+                }
+                requestAnimationFrame(fadeOut);
+              }, showDuration);
+            }
+          }
+          requestAnimationFrame(fadeIn);
+        }
+      };
+      frameId = requestAnimationFrame(animateMove);
+      return () => { if (frameId) cancelAnimationFrame(frameId); };
+    }
+  }, [abeStep, isAbeAnimating]);
+
+  // policy 모델 생성 및 애니메이션 (isPolicyFullyVisible는 위에서 set)
   useEffect(() => {
     if (!isPolicyFullyVisible) return;
-    const timeout = setTimeout(() => {
-      setIsAbeMovingToOrigin(true);
-    }, ANIMATION_DELAY);
-    return () => clearTimeout(timeout);
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/policy.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, -2, 4);
+      modelObj.rotateY(Math.PI / 2 * -1);
+      sceneRef.current.add(modelObj);
+      policyRef.current = modelObj;
+      const duration = 1000;
+      let startTime = null;
+      const animateAppear = (timestamp) => {
+        if (!isMounted.current || !policyRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const scale = 14 * progress;
+        policyRef.current.scale.set(scale, scale, scale);
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animateAppear);
+        }
+      };
+      frameId = requestAnimationFrame(animateAppear);
+    });
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
+        sceneRef.current.remove(modelObj);
+      }
+      policyRef.current = null;
+    };
   }, [isPolicyFullyVisible]);
 
-  // CP-ABE 키카드+policy 원점 이동 애니메이션
+  // 인증서 모델 애니메이션 (CP-ABE용)
   useEffect(() => {
-    if (!isAbeMovingToOrigin) return;
-    let frameId;
-    const moveDuration = 1000;
-    let startTime = null;
-
-    const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
-    const policyStart = policyRef.current ? policyRef.current.position.clone() : null;
-    const keycardTarget = new THREE.Vector3(-2, 0, 0);
-    const policyTarget = new THREE.Vector3(2, -2, 0);
-
-    const animateMove = (timestamp) => {
-      if (!isMounted.current) return;
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const t = Math.min(elapsed / moveDuration, 1);
-
-      if (keycardRef.current && keycardStart) {
-        keycardRef.current.position.lerpVectors(keycardStart, keycardTarget, t);
-      }
-      if (policyRef.current && policyStart) {
-        policyRef.current.position.lerpVectors(policyStart, policyTarget, t);
-      }
-
-      if (t < 1) {
-        frameId = requestAnimationFrame(animateMove);
-      } else {
-        setTimeout(() => {
-          setIsCubeVisible(true);
-          setTimeout(() => {
-            setIsAbeGroupMoving(true);
-          }, ANIMATION_DELAY);
-        }, ANIMATION_DELAY);
-      }
-    };
-    frameId = requestAnimationFrame(animateMove);
-
-    return () => {
-      if (frameId) cancelAnimationFrame(frameId);
-    };
-  }, [isAbeMovingToOrigin]);
-
-  // CP-ABE 키카드+policy+큐브를 하나의 그룹처럼 큐브 클러스터 쪽으로 이동시키는 애니메이션
-  useEffect(() => {
-    if (!isAbeGroupMoving) return;
-    let frameId;
-    const moveDuration = 2500;
-    let startTime = null;
-
-    const clusterTarget = new THREE.Vector3(
-      Math.random() * 20 + 200,
-      Math.random() * 20 + 100,
-      Math.random() * 20 - 10
-    );
-
-    const models = [keycardRef.current, policyRef.current, cubeRef.current].filter(Boolean);
-    if (models.length === 0) return;
-
-    const groupStartCenter = new THREE.Vector3();
-    models.forEach(m => groupStartCenter.add(m.position));
-    groupStartCenter.divideScalar(models.length);
-
-    const relativePositions = models.map(m => m.position.clone().sub(groupStartCenter));
-
-    const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
-    const cameraTarget = clusterTarget.clone().add(new THREE.Vector3(30, 10, 30));
-    const controlsStart = controlsRef.current ? controlsRef.current.target.clone() : null;
-    const controlsTarget = clusterTarget.clone();
-
-    const animateMove = (timestamp) => {
-      if (!isMounted.current) return;
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const t = Math.min(elapsed / moveDuration, 1);
-
-      const currentCenter = groupStartCenter.clone().lerp(clusterTarget, t);
-      models.forEach((m, i) => {
-        m.position.copy(currentCenter.clone().add(relativePositions[i]));
-      });
-
-      if (cameraRef.current && cameraStart && cameraTarget) {
-        cameraRef.current.position.lerpVectors(cameraStart, cameraTarget, t);
-      }
-      if (controlsRef.current && controlsStart && controlsTarget) {
-        controlsRef.current.target.lerpVectors(controlsStart, controlsTarget, t);
-        controlsRef.current.update();
-      }
-
-      if (t < 1) {
-        frameId = requestAnimationFrame(animateMove);
-      } else {
-        setIsAbeGroupMoving(false);
-        setIsAbeAnimating(false);
-
-        setShowAbeUploadComplete(true);
-        setAbeUploadCompleteOpacity(0);
-
-        let fadeInStart = null;
-        const fadeInDuration = 500;
-        const fadeOutDuration = 500;
-        const showDuration = 1000;
-
-        function fadeIn(ts) {
-          if (!fadeInStart) fadeInStart = ts;
-          const elapsed = ts - fadeInStart;
-          const t = Math.min(elapsed / fadeInDuration, 1);
-          setAbeUploadCompleteOpacity(t);
-          if (t < 1) {
-            requestAnimationFrame(fadeIn);
-          } else {
-            setTimeout(() => {
-              let fadeOutStart = null;
-              function fadeOut(ts2) {
-                if (!fadeOutStart) fadeOutStart = ts2;
-                const elapsed2 = ts2 - fadeOutStart;
-                const t2 = Math.min(elapsed2 / fadeOutDuration, 1);
-                setAbeUploadCompleteOpacity(1 - t2);
-                if (t2 < 1) {
-                  requestAnimationFrame(fadeOut);
-                } else {
-                  setShowAbeUploadComplete(false);
-                }
-              }
-              requestAnimationFrame(fadeOut);
-            }, showDuration);
-          }
-        }
-        requestAnimationFrame(fadeIn);
-      }
-    };
-    frameId = requestAnimationFrame(animateMove);
-
-    return () => {
-      if (frameId) cancelAnimationFrame(frameId);
-    };
-  }, [isAbeGroupMoving]);
-
-  // 인증서 모델 애니메이션
-  useEffect(() => {
-    if (!isCertificateEmerging) return;
+    if (!isAbeCertificateEmerging) return;
     let frameId;
     let modelObj = null;
     const loader = new GLTFLoader();
     loader.load('/resources/models/certificate.glb', (gltf) => {
       if (!isMounted.current) return;
       modelObj = gltf.scene;
-      modelObj.scale.set(0, 0, 0); // 처음엔 0
-      // 큐브가 씌워진 위치에서 등장, 씬에 직접 추가
-      modelObj.position.set(0, 0, 10); // 큐브 위쪽에 고정
-      modelObj.rotateY(Math.PI / 2 * -1); // 건물 방향에 맞춰 회전
+      modelObj.scale.set(0, 0, 0);
+      modelObj.position.set(0, 0, 0);
+      modelObj.rotateY(Math.PI / 2 * -1);
       sceneRef.current.add(modelObj);
       certificateRef.current = modelObj;
-
-      // 애니메이션: scale 0 -> 1 (y 위치는 고정)
       const duration = 1000;
       let startTime = null;
       const startScale = 0;
@@ -1076,7 +1124,7 @@ const EncryptionVisualizationScene = () => {
       }
       certificateRef.current = null;
     };
-  }, [isCertificateEmerging]);
+  }, [isAbeCertificateEmerging]);
 
   // 반투명 구 추가
   useEffect(() => {
