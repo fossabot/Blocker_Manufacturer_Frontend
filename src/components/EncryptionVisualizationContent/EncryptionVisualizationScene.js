@@ -355,6 +355,116 @@ const EncryptionVisualizationScene = () => {
       }
     );
 
+    // 정적 모델 생성 및 배치
+  const staticModels = {
+    keycard: null,
+    file: null,
+    policy: null,
+    cube: null,
+  };
+
+  // 키카드 모델
+  const keycardLoader = new GLTFLoader();
+  keycardLoader.load('/resources/models/key_card.glb', (gltf) => {
+    if (!isMounted.current) return;
+    const model = gltf.scene;
+    model.scale.set(0.01, 0.01, 0.01);
+    model.position.set(-15, -48, 0); // 건물 아래, x = -15
+    sceneRef.current.add(model);
+    staticModels.keycard = model;
+
+    // 대칭키 레이블
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'label';
+    labelDiv.textContent = '대칭키';
+    labelDiv.style.color = '#fff';
+    labelDiv.style.fontSize = '14px';
+    labelDiv.style.fontWeight = 'bold';
+    labelDiv.style.background = 'rgba(0,0,0,0.5)';
+    labelDiv.style.padding = '2px 6px';
+    labelDiv.style.borderRadius = '4px';
+    const label = new CSS2DObject(labelDiv);
+    label.position.set(-15, -46, 0); // 모델 위쪽
+    sceneRef.current.add(label);
+  });
+
+  // 파일 모델
+  const fileLoader = new GLTFLoader();
+  fileLoader.load('/resources/models/file.glb', (gltf) => {
+    if (!isMounted.current) return;
+    const model = gltf.scene;
+    model.scale.set(0.03, 0.03, 0.03);
+    model.position.set(-5, -48, 0); // x = -5
+    model.rotateY(Math.PI / 2 * -1);
+    sceneRef.current.add(model);
+    staticModels.file = model;
+
+    // MotionV2 레이블
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'label';
+    labelDiv.textContent = 'MotionV2';
+    labelDiv.style.color = '#fff';
+    labelDiv.style.fontSize = '14px';
+    labelDiv.style.fontWeight = 'bold';
+    labelDiv.style.background = 'rgba(0,0,0,0.5)';
+    labelDiv.style.padding = '2px 6px';
+    labelDiv.style.borderRadius = '4px';
+    const label = new CSS2DObject(labelDiv);
+    label.position.set(-5, -46, 0); // 모델 위쪽
+    sceneRef.current.add(label);
+  });
+
+  // 정책 모델
+  const policyLoader = new GLTFLoader();
+  policyLoader.load('/resources/models/policy.glb', (gltf) => {
+    if (!isMounted.current) return;
+    const model = gltf.scene;
+    model.scale.set(14, 14, 14);
+    model.position.set(5, -48, 0); // x = 5
+    model.rotateY(Math.PI / 2 * -1);
+    sceneRef.current.add(model);
+    staticModels.policy = model;
+
+    // 정책 레이블
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'label';
+    labelDiv.textContent = '정책';
+    labelDiv.style.color = '#fff';
+    labelDiv.style.fontSize = '14px';
+    labelDiv.style.fontWeight = 'bold';
+    labelDiv.style.background = 'rgba(0,0,0,0.5)';
+    labelDiv.style.padding = '2px 6px';
+    labelDiv.style.borderRadius = '4px';
+    const label = new CSS2DObject(labelDiv);
+    label.position.set(5, -46, 0); // 모델 위쪽
+    sceneRef.current.add(label);
+  });
+
+  // 큐브 모델
+  const cubeLoader = new GLTFLoader();
+  cubeLoader.load('/resources/models/cube.glb', (gltf) => {
+    if (!isMounted.current) return;
+    const model = gltf.scene;
+    model.scale.set(0.2, 0.2, 0.2);
+    model.position.set(15, -48, 0); // x = 15
+    sceneRef.current.add(model);
+    staticModels.cube = model;
+
+    // 암호화 레이블
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'label';
+    labelDiv.textContent = '암호화';
+    labelDiv.style.color = '#fff';
+    labelDiv.style.fontSize = '14px';
+    labelDiv.style.fontWeight = 'bold';
+    labelDiv.style.background = 'rgba(0,0,0,0.5)';
+    labelDiv.style.padding = '2px 6px';
+    labelDiv.style.borderRadius = '4px';
+    const label = new CSS2DObject(labelDiv);
+    label.position.set(15, -46, 0); // 모델 위쪽
+    sceneRef.current.add(label);
+  });
+
     // city 모델 추가
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
@@ -510,7 +620,7 @@ const EncryptionVisualizationScene = () => {
     cubeLabelDiv.style.padding = '4px 10px';
     cubeLabelDiv.style.borderRadius = '8px';
     const cubeLabel = new CSS2DObject(cubeLabelDiv);
-    cubeLabel.position.set(220, 170, -10);
+    cubeLabel.position.set(220, 160, -10);
     sceneRef.current.add(cubeLabel);
 
     // 구 클러스터 레이블
@@ -523,7 +633,7 @@ const EncryptionVisualizationScene = () => {
     sphereLabelDiv.style.padding = '4px 10px';
     sphereLabelDiv.style.borderRadius = '8px';
     const sphereLabel = new CSS2DObject(sphereLabelDiv);
-    sphereLabel.position.set(220, 170, 120);
+    sphereLabel.position.set(220, 160, 120);
     sceneRef.current.add(sphereLabel);
 
     // 애니메이션 루프

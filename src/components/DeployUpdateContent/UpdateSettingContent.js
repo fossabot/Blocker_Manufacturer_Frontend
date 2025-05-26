@@ -82,7 +82,7 @@ function UpdateSettingContent({ updateName, price, description, onSettingsChange
       <div className={styles.leftColumn}>
         {/* 업데이트 명 입력 그룹 */}
         <div className={styles.inputGroup}>
-          <label htmlFor="updateName" className={styles.label}>Update Name</label>
+          <label htmlFor="updateName" className={styles.label}>Update Version</label>
           <input
             type="text"
             id="updateName"
