@@ -55,6 +55,10 @@ const EncryptionVisualizationScene = () => {
   const [showAbeUploadComplete, setShowAbeUploadComplete] = useState(false);
   const [abeUploadCompleteOpacity, setAbeUploadCompleteOpacity] = useState(0);
 
+  // 큐브에서 인증서 모델이 나오는 애니메이션용 상태
+  const [isCertificateEmerging, setIsCertificateEmerging] = useState(false);
+  const certificateRef = useRef(null);
+
   // 업데이트 파일 업로드 애니메이션 시작
   const handleUploadClick = () => {
     if (isAnimating) return;
@@ -101,7 +105,11 @@ const EncryptionVisualizationScene = () => {
             setIsCubeVisible(true);
 
             setTimeout(() => {
-              setIsClusterMoving(true);
+              setIsCertificateEmerging(true);
+              setTimeout(() => {
+                setIsClusterMoving(true);
+                setIsCertificateEmerging(false);
+              }, ANIMATION_DELAY); // 인증서 애니메이션 끝나고 클러스터 이동
             }, ANIMATION_DELAY);
           }, ANIMATION_DELAY);
         }, ANIMATION_DELAY);
@@ -1026,6 +1034,49 @@ const EncryptionVisualizationScene = () => {
       if (frameId) cancelAnimationFrame(frameId);
     };
   }, [isAbeGroupMoving]);
+
+  // 인증서 모델 애니메이션
+  useEffect(() => {
+    if (!isCertificateEmerging) return;
+    let frameId;
+    let modelObj = null;
+    const loader = new GLTFLoader();
+    loader.load('/resources/models/certificate.glb', (gltf) => {
+      if (!isMounted.current) return;
+      modelObj = gltf.scene;
+      modelObj.scale.set(0, 0, 0); // 처음엔 0
+      // 큐브가 씌워진 위치에서 등장, 씬에 직접 추가
+      modelObj.position.set(0, 0, 10); // 큐브 위쪽에 고정
+      modelObj.rotateY(Math.PI / 2 * -1); // 건물 방향에 맞춰 회전
+      sceneRef.current.add(modelObj);
+      certificateRef.current = modelObj;
+
+      // 애니메이션: scale 0 -> 1 (y 위치는 고정)
+      const duration = 1000;
+      let startTime = null;
+      const startScale = 0;
+      const endScale = 2;
+      const animateEmergence = (timestamp) => {
+        if (!isMounted.current || !certificateRef.current) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const scale = startScale + (endScale - startScale) * t;
+        certificateRef.current.scale.set(scale, scale, scale);
+        if (t < 1) {
+          frameId = requestAnimationFrame(animateEmergence);
+        }
+      };
+      frameId = requestAnimationFrame(animateEmergence);
+    });
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      if (certificateRef.current && sceneRef.current) {
+        sceneRef.current.remove(certificateRef.current);
+      }
+      certificateRef.current = null;
+    };
+  }, [isCertificateEmerging]);
 
   // 반투명 구 추가
   useEffect(() => {
