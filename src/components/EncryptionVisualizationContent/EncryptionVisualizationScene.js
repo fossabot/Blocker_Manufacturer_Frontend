@@ -440,7 +440,7 @@ const EncryptionVisualizationScene = () => {
     for (let i = 0; i < 10; i++) {
       const x = Math.random() * 20 + 200;
       const y = Math.random() * 20 + 100;
-      const z = Math.random() * 20 + 100;
+      const z = Math.random() * 20 - 10;
       const cubePosition = new THREE.Vector3(x, y, z);
       cubeClusterTotal.add(cubePosition);
       const cube = new THREE.Mesh(cubeClusterGeometry, cubeClusterMaterial);
@@ -457,7 +457,7 @@ const EncryptionVisualizationScene = () => {
     for (let i = 0; i < 10; i++) {
       const x = Math.random() * 20 + 200;
       const y = Math.random() * 20 + 100;
-      const z = Math.random() * 20 - 10;
+      const z = Math.random() * 20 + 100;
       const spherePosition = new THREE.Vector3(x, y, z);
       sphereClusterTotal.add(spherePosition);
       const sphere = new THREE.Mesh(sphereClusterGeometry, sphereClusterMaterial);
@@ -510,7 +510,7 @@ const EncryptionVisualizationScene = () => {
     cubeLabelDiv.style.padding = '4px 10px';
     cubeLabelDiv.style.borderRadius = '8px';
     const cubeLabel = new CSS2DObject(cubeLabelDiv);
-    cubeLabel.position.set(220, 170, 120);
+    cubeLabel.position.set(220, 170, -10);
     sceneRef.current.add(cubeLabel);
 
     // 구 클러스터 레이블
@@ -523,7 +523,7 @@ const EncryptionVisualizationScene = () => {
     sphereLabelDiv.style.padding = '4px 10px';
     sphereLabelDiv.style.borderRadius = '8px';
     const sphereLabel = new CSS2DObject(sphereLabelDiv);
-    sphereLabel.position.set(220, 170, -10);
+    sphereLabel.position.set(220, 170, 120);
     sceneRef.current.add(sphereLabel);
 
     // 애니메이션 루프
@@ -629,7 +629,7 @@ const EncryptionVisualizationScene = () => {
     const clusterTarget = new THREE.Vector3(
       Math.random() * 20 + 200,
       Math.random() * 20 + 100,
-      Math.random() * 20 - 10
+      Math.random() * 20 + 100
     );
 
     const cameraStart = cameraRef.current ? cameraRef.current.position.clone() : null;
@@ -807,7 +807,7 @@ const EncryptionVisualizationScene = () => {
     const clusterTarget = new THREE.Vector3(
       Math.random() * 20 + 200,
       Math.random() * 20 + 100,
-      Math.random() * 20 + 100
+      Math.random() * 20 - 10
     );
 
     const models = [keycardRef.current, policyRef.current, cubeRef.current].filter(Boolean);
@@ -905,7 +905,7 @@ const EncryptionVisualizationScene = () => {
       depthWrite: false,
     });
     const sphere1 = new THREE.Mesh(sphere1Geometry, sphere1Material);
-    sphere1.position.set(210, 110, 110);
+    sphere1.position.set(210, 110, 0);
     sceneRef.current.add(sphere1);
 
     // 두 번째 구: (220, 120, 0)
@@ -917,7 +917,7 @@ const EncryptionVisualizationScene = () => {
       depthWrite: false,
     });
     const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
-    sphere2.position.set(210, 110, 0);
+    sphere2.position.set(210, 110, 110);
     sceneRef.current.add(sphere2);
 
     return () => {
