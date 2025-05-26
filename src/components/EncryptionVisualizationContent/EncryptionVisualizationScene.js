@@ -6,7 +6,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRe
 import { useNavigate } from 'react-router-dom';
 
 // 저장해둔 초기 카메라 위치
-const initialCameraPosition = { x: -70, y: -20, z: -35 };
+const initialCameraPosition = { x: -80, y: -25, z: 65 };
 const initialTarget = { x: 100, y: 30, z: 50 };
 
 const CAMERA_ANIMATION_DURATION = 1000; // ms
