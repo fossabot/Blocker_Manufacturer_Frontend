@@ -95,7 +95,7 @@ function App() {
     const policy = {
       model: deploymentData.policyConditions.modelName.length > 0 ? deploymentData.policyConditions.modelName.join(' OR ') : '',
       serial: deploymentData.policyConditions.serialNumber.length > 0 ? deploymentData.policyConditions.serialNumber.join(' OR ') : '',
-      manufacture: deploymentData.policyConditions.manufactureDate.length > 0 ? deploymentData.policyConditions.manufactureDate.join(' OR ') : '',
+      date: deploymentData.policyConditions.manufactureDate.length > 0 ? deploymentData.policyConditions.manufactureDate.join(' OR ') : '',
       option: deploymentData.policyConditions.optionType.length > 0 ? deploymentData.policyConditions.optionType.join(' OR ') : '',
     };
     const policyString = JSON.stringify(policy);

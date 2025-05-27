@@ -10,7 +10,7 @@ const initialCameraPosition = { x: -80, y: -25, z: 65 };
 const initialTarget = { x: 100, y: 30, z: 50 };
 
 const CAMERA_ANIMATION_DURATION = 1000; // ms
-const ANIMATION_DELAY = 3000; // ms, 모든 단계 사이 딜레이
+const ANIMATION_DELAY = 500; // ms, 모든 단계 사이 딜레이
 
 const EncryptionVisualizationScene = () => {
   const containerRef = useRef(null);
@@ -121,6 +121,39 @@ const EncryptionVisualizationScene = () => {
           setTimeout(() => {
             setIsCubeVisible(true);
 
+            // === 대칭키 모델 점점 사라지기 ===
+            if (keycardRef.current) {
+              let fadeFrameId;
+              let fadeStart = null;
+              const fadeDuration = 1000;
+              // 투명도 적용을 위해 material.transparent = true
+              keycardRef.current.traverse((child) => {
+                if (child.isMesh && child.material) {
+                  child.material.transparent = true;
+                }
+              });
+              const fadeOut = (timestamp) => {
+                if (!fadeStart) fadeStart = timestamp;
+                const elapsed = timestamp - fadeStart;
+                const t = Math.min(elapsed / fadeDuration, 1);
+                keycardRef.current.traverse((child) => {
+                  if (child.isMesh && child.material && typeof child.material.opacity === 'number') {
+                    child.material.opacity = 1 - t;
+                  }
+                });
+                if (t < 1) {
+                  fadeFrameId = requestAnimationFrame(fadeOut);
+                } else {
+                  // 완전히 사라지면 씬에서 제거
+                  if (sceneRef.current && keycardRef.current) {
+                    sceneRef.current.remove(keycardRef.current);
+                    keycardRef.current = null;
+                  }
+                }
+              };
+              fadeFrameId = requestAnimationFrame(fadeOut);
+            }
+
             // === 인증서 등장 3초 ===
             setTimeout(() => {
               setIsCertificateVisible(true);
@@ -132,9 +165,9 @@ const EncryptionVisualizationScene = () => {
                   setIsClusterMoving(true);
                   setIsCertificateVisible(false);
                   setIsCertificateMoving(false);
-                }, 6000); // 6초 대기
-              }, 2000); // 2초간 z축 이동
-            }, 3000); // 3초간 등장
+                }, 2000); // 6초 대기
+              }, 1000); // 2초간 z축 이동
+            }, 100); // 3초간 등장
           }, ANIMATION_DELAY);
         }, ANIMATION_DELAY);
       }, ANIMATION_DELAY);
@@ -510,7 +543,7 @@ const EncryptionVisualizationScene = () => {
       // 인증서 레이블
       const certLabelDiv = document.createElement('div');
       certLabelDiv.className = 'label';
-      certLabelDiv.textContent = 'ECDSA 인증서';
+      certLabelDiv.textContent = 'SHA3 해시';
       certLabelDiv.style.color = '#fff';
       certLabelDiv.style.fontSize = '14px';
       certLabelDiv.style.fontWeight = 'bold';
@@ -751,7 +784,7 @@ const EncryptionVisualizationScene = () => {
     const keycardStart = keycardRef.current ? keycardRef.current.position.clone() : null;
     const fileStart = fileRef.current ? fileRef.current.position.clone() : null;
     const keycardTarget = new THREE.Vector3(-2, 0, 0);
-    const fileTarget = new THREE.Vector3(2, -2, 0);
+    const fileTarget = new THREE.Vector3(0, -2, 0);
 
     const animateMove = (timestamp) => {
       if (!isMounted.current) return;
@@ -784,7 +817,12 @@ const EncryptionVisualizationScene = () => {
     const moveDuration = 2500;
     let startTime = null;
 
-    const models = [keycardRef.current, fileRef.current, cubeRef.current].filter(Boolean);
+    // 대칭키(키카드)는 클러스터로 이동하지 않고, file과 cube만 이동
+    if (keycardRef.current && sceneRef.current) {
+      sceneRef.current.remove(keycardRef.current);
+      keycardRef.current = null;
+    }
+    const models = [fileRef.current, cubeRef.current].filter(Boolean);
     if (models.length === 0) return;
 
     const groupStartCenter = new THREE.Vector3();
@@ -1157,7 +1195,7 @@ const EncryptionVisualizationScene = () => {
       modelObj.rotateY(Math.PI / 2 * -1);
       sceneRef.current.add(modelObj);
       certificateRef.current = modelObj;
-      const duration = 3000; // 3초 등장
+      const duration = 2000; // 3초 등장
       let startTime = null;
       const startScale = 0;
       const endScale = 2;
@@ -1187,11 +1225,11 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isCertificateMoving) return;
     let frameId;
-    const moveDuration = 3000; // 2초간 z축 이동
+    const moveDuration = 2000; // 2초간 z축 이동
     let startTime = null;
     const start = certificateRef.current ? certificateRef.current.position.clone() : null;
     // 목적지는 (0,0,7)
-    const target = new THREE.Vector3(0, 0, 7);
+    const target = new THREE.Vector3(-4, 0, 8);
     const animateMove = (timestamp) => {
       if (!isMounted.current) return;
       if (!startTime) startTime = timestamp;

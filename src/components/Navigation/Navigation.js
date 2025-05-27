@@ -14,7 +14,8 @@ function Navigation() {
         <NavLink to="/monitoring" className={({isActive}) => isActive ? styles.active : ''}>
           Update Monitoring
         </NavLink>
-        <NavLink to="/about" className={({isActive}) => isActive ? styles.active : ''}>
+        <NavLink to="/encryption-visualization" className={({isActive}) => isActive ? styles.active : ''}>
+        {/* /about */}
           About Us
         </NavLink>
       </div>
