@@ -745,6 +745,17 @@ const EncryptionVisualizationScene = () => {
       sceneRef.current.add(hyundaiLogo);
     });
 
+    // === 현대자동차 로고 모델 추가 ===
+    const NVision74Loader = new GLTFLoader();
+    NVision74Loader.load('/resources/models/hyundai_cars_logo.glb', (gltf) => {
+      if (!isMounted.current) return;
+      const hyundaiLogo = gltf.scene;
+      hyundaiLogo.scale.set(0.1, 0.1, 0.1); // 적절한 크기로 조정
+      hyundaiLogo.position.set(-6.8, -8, 0); // 박스 위에 올리기 (y=-4)
+      hyundaiLogo.rotateY(Math.PI / 2 * -1); // 정면을 바라보게
+      sceneRef.current.add(hyundaiLogo);
+    });
+
     // 애니메이션 루프
     const animate = () => {
       if (!isMounted.current) return;
@@ -977,49 +988,35 @@ const EncryptionVisualizationScene = () => {
   useEffect(() => {
     if (!isAbeAnimating) return;
     if (abeStep === 1) {
-      // 대칭키, 정책, 인증서 모델이 등장할 때 x, z 간격을 일정하게 조정
-      // 등장 애니메이션에서 위치 지정
+      // 키카드, 정책 등장 및 위치 지정
       const positions = [
         { x: 0, y: 0, z: -1.5 }, // keycard
-        { x: 0,    y: -2, z: 0    }, // policy
-        { x: 0,  y: 0, z: 1.5  }, // certificate
+        { x: 0, y: -2, z: 0 },   // policy
       ];
       setIsKeycardVisible(true);
       setKeycardAppearProgress(0);
       if (keycardRef.current) keycardRef.current.position.set(positions[0].x, positions[0].y, positions[0].z);
       if (policyRef.current) policyRef.current.position.set(positions[1].x, positions[1].y, positions[1].z);
-      if (certificateRef.current) certificateRef.current.position.set(positions[2].x, positions[2].y, positions[2].z);
       const t = setTimeout(() => setAbeStep(2), ANIMATION_DELAY);
       return () => clearTimeout(t);
     }
     if (abeStep === 2) {
       setIsPolicyFullyVisible(true);
-      const t = setTimeout(() => setAbeStep(3), ANIMATION_DELAY);
+      const t = setTimeout(() => setAbeStep(3), 1000);
       return () => clearTimeout(t);
     }
     if (abeStep === 3) {
-      setIsAbeCertificateEmerging(true);
-      const t = setTimeout(() => setAbeStep(4), ANIMATION_DELAY);
-      return () => clearTimeout(t);
-    }
-    if (abeStep === 4) {
-      setAbeStep(5); // 바로 다음 단계로 (group move)
-    }
-    if (abeStep === 5) {
-      // 세 모델(키카드, 정책, 인증서) x값만 다르게 하여 원점(y,z=0) 근처로 모으기, 정책 모델은 y값 유지
+      // 키카드, 정책 한 곳으로 모으기
       let frameId;
       const moveDuration = 1000;
       let startTime = null;
-      const xTargets = [-1.5, 0, 1.5]; // keycard, policy, certificate x 위치
-      const models = [certificateRef.current, policyRef.current, keycardRef.current].filter(Boolean);
-      if (models.length !== 3) return;
+      const xTargets = [-1.5, 1.5]; // keycard, policy x 위치
+      const models = [keycardRef.current, policyRef.current].filter(Boolean);
+      if (models.length !== 2) return;
       const startPositions = models.map(m => m.position.clone());
-      // 정책 모델의 y값을 그대로 유지
-      const policyY = startPositions[1].y;
       const targetPositions = [
         new THREE.Vector3(xTargets[0], 0, 0),
-        new THREE.Vector3(xTargets[1], policyY, 0), // 정책 모델만 y값 유지
-        new THREE.Vector3(xTargets[2], 0, 0),
+        new THREE.Vector3(xTargets[1], -2, 0),
       ];
       const animateMove = (timestamp) => {
         if (!isMounted.current) return;
@@ -1032,19 +1029,24 @@ const EncryptionVisualizationScene = () => {
         if (t < 1) {
           frameId = requestAnimationFrame(animateMove);
         } else {
-          setAbeStep(6); // 큐브 등장
+          setAbeStep(4); // 큐브 생성
         }
       };
       frameId = requestAnimationFrame(animateMove);
       return () => { if (frameId) cancelAnimationFrame(frameId); };
     }
-    if (abeStep === 6) {
+    if (abeStep === 4) {
       setIsCubeVisible(true);
-      const t = setTimeout(() => setAbeStep(7), ANIMATION_DELAY);
+      const t = setTimeout(() => setAbeStep(5), 1000);
       return () => clearTimeout(t);
     }
-    if (abeStep === 7) {
-      // 네 모델(키카드, 정책, 인증서, 큐브) 블록체인 네트워크로 이동
+    if (abeStep === 5) {
+      setIsAbeCertificateEmerging(true);
+      const t = setTimeout(() => setAbeStep(6), 1500);
+      return () => clearTimeout(t);
+    }
+    if (abeStep === 6) {
+      // 네 모델(키카드, 정책, 인증서, 큐브) 클러스터로 이동
       let frameId;
       const moveDuration = 2500;
       let startTime = null;
@@ -1170,7 +1172,7 @@ const EncryptionVisualizationScene = () => {
       if (!isMounted.current) return;
       modelObj = gltf.scene;
       modelObj.scale.set(0, 0, 0);
-      modelObj.position.set(0, 0, 0);
+      modelObj.position.set(-4, 0, 0);
       modelObj.rotateY(Math.PI / 2 * -1);
       sceneRef.current.add(modelObj);
       certificateRef.current = modelObj;
