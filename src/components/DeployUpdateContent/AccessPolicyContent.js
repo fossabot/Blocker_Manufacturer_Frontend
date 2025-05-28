@@ -8,10 +8,10 @@ const AccessPolicyContent = ({ onValuesChange, initialValues }) => {
     // 각 유형별 입력 값들을 배열로 관리하는 로컬 state
     // initialValues prop이 제공되면 그 값으로 초기화, 없으면 기본값으로 초기화
     const [itemValues, setItemValues] = useState(initialValues || {
-        modelName: [],
-        serialNumber: [],
-        manufactureDate: [],
-        optionType: [],
+        modelName: ["VS500"],
+        serialNumber: ["KMHEM42APXA75****"],
+        manufactureDate: ["2015"],
+        optionType: ["EXCLUSIVE", "PRESTIGE"],
     });
 
     // 항목(컬럼)의 헤더와 해당 데이터를 식별할 키
@@ -31,10 +31,10 @@ const AccessPolicyContent = ({ onValuesChange, initialValues }) => {
     useEffect(() => {
         console.log("AccessPolicyContent: initialValues prop changed, updating local state.");
         setItemValues(initialValues || {
-            modelName: [],
-            serialNumber: [],
-            manufactureDate: [],
-            optionType: [],
+            modelName: ["VS500"],
+            serialNumber: ["KMHEM42APXA75****"],
+            manufactureDate: ["2015"],
+            optionType: ["EXCLUSIVE", "PRESTIGE"],
         });
         // initialValues가 변경되면 마지막 추가 정보 상태를 초기화합니다.
         setLastAddedInputInfo(null);

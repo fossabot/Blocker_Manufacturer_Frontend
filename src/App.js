@@ -29,10 +29,10 @@ function App() {
     price: '',
     description: '',
     policyConditions: {
-      modelName: [],
-      serialNumber: [],
-      manufactureDate: [],
-      optionType: [],
+      modelName: ["VS500"],
+      serialNumber: ["KMHEM42APXA75****"],
+      manufactureDate: ["2015"],
+      optionType: ["EXCLUSIVE", "PRESTIGE"],
     },
   });
 
