@@ -420,6 +420,7 @@ const EncryptionVisualizationScene = () => {
       }
     );
 
+
     // 정적 모델 생성 및 배치
   const staticModels = {
     keycard: null,
@@ -725,6 +726,24 @@ const EncryptionVisualizationScene = () => {
     const sphereLabel = new CSS2DObject(sphereLabelDiv);
     sphereLabel.position.set(220, 160, 120);
     sceneRef.current.add(sphereLabel);
+
+    // === 회색 직육면체(박스) 원점에 추가 ===
+    const grayBoxGeometry = new THREE.BoxGeometry(2, 6, 8);
+    const grayBoxMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
+    const grayBox = new THREE.Mesh(grayBoxGeometry, grayBoxMaterial);
+    grayBox.position.set(-5, -8, 0); // y=1로 바닥 위에 살짝 올림
+    sceneRef.current.add(grayBox);
+
+    // === 현대자동차 로고 모델 추가 ===
+    const hyundaiLoader = new GLTFLoader();
+    hyundaiLoader.load('/resources/models/hyundai_cars_logo.glb', (gltf) => {
+      if (!isMounted.current) return;
+      const hyundaiLogo = gltf.scene;
+      hyundaiLogo.scale.set(0.1, 0.1, 0.1); // 적절한 크기로 조정
+      hyundaiLogo.position.set(-6.8, -8, 0); // 박스 위에 올리기 (y=-4)
+      hyundaiLogo.rotateY(Math.PI / 2 * -1); // 정면을 바라보게
+      sceneRef.current.add(hyundaiLogo);
+    });
 
     // 애니메이션 루프
     const animate = () => {
