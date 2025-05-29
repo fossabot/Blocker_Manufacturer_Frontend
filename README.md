@@ -75,8 +75,8 @@ Blocker_Manufacturer_Frontend/
 ## 🌍 배포 및 서버 주소
 
 - **제조사 서버 주소**: [http://blocker.o-r.kr](http://blocker.o-r.kr)
+- **Vercel 배포 주소**: [https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/](https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/)
 - **Vercel Inspect**: [https://vercel.com/3duck1s-projects/blocker-industry/C7YedDjwdeUbDPShcUjs2XAWMK1v](https://vercel.com/3duck1s-projects/blocker-industry/C7YedDjwdeUbDPShcUjs2XAWMK1v)
-- **예비 배포 주소**: [https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/](https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/)
 
 ---
 
