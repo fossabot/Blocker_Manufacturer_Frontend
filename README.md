@@ -1,52 +1,63 @@
 # Blocker Manufacturer Frontend
 
-## 📂 프로젝트 구조 (2025.05.02 기준)
+## 📂 프로젝트 구조 (2025.05.29 기준)
 
 ```
 Blocker_Manufacturer_Frontend/
 │
-├── public/                     # 정적 파일
-│   ├── index.html              # 메인 HTML 파일
-│   ├── manifest.json           # 웹 앱 매니페스트
-│   └── robots.txt              # 크롤러 접근 제한 파일
+├── public/                         # 정적 파일 및 리소스
+│   ├── index.html                  # 메인 HTML 파일
+│   ├── manifest.json               # 웹 앱 매니페스트
+│   ├── robots.txt                  # 크롤러 접근 제한 파일
+│   ├── favicon.ico                 # 파비콘
+│   ├── block.ico                   # 추가 아이콘
+│   ├── logo192.png                 # 앱 아이콘
+│   ├── logo512.png                 # 앱 아이콘
+│   └── resources/                  # 3D 모델 및 텍스처 리소스
+│       ├── models/                 # GLB/FBX 등 3D 모델 파일
+│       └── textures/               # 이미지 텍스처 파일
 │
-├── src/                        # 소스 코드
-│   ├── api/                    # API 서비스 모듈
-│   │   ├── api.js              # API 유틸리티
-│   │   └── uploadService.js    # 파일 업로드 API 서비스
-│   │
-│   ├── components/             # 재사용 가능한 UI 컴포넌트
-│   │   ├── Background/         # 배경 관련 컴포넌트
-│   │   ├── DeployUpdateContent/ # 배포 관련 컴포넌트
-│   │   ├── FooterContent/      # 푸터 컴포넌트
-│   │   ├── HeaderContent/      # 헤더 컴포넌트
-│   │   ├── MainContent/        # 메인 콘텐츠 컴포넌트
-│   │   ├── MonitoringConent/   # 업데이트 모니터링 컴포넌트
-│   │   └── Navigation/         # 네비게이션 바 컴포넌트
-│   │
-│   ├── pages/                  # 페이지 단위 컴포넌트
-│   │   ├── AccessPolicy.js     # 접근 정책 페이지
-│   │   ├── DeploymentComplete.js # 배포 완료 페이지
-│   │   ├── DeploymentSummary.js  # 배포 요약 페이지
-│   │   ├── FileUpload.js       # 파일 업로드 페이지
-│   │   ├── Home.js             # 홈 페이지
-│   │   ├── UpdateMonitoring.js # 업데이트 모니터링 페이지
-│   │   └── UpdateSetting.js    # 업데이트 설정 페이지
-│   │
-│   ├── App.js                  # 메인 React 컴포넌트
-│   ├── index.js                # React 앱 진입점
-│   ├── config.js               # 설정 파일
-│   ├── reportWebVitals.js      # 성능 보고
-│   └── setupTests.js           # 테스트 설정
+├── src/                            # 소스 코드
+│   ├── api/                        # API 서비스 모듈
+│   │   ├── api.js                  # API 유틸리티
+│   │   └── uploadService.js        # 파일 업로드 API 서비스
+│   ├── assets/                     # 이미지 등 정적 에셋
+│   │   └── N74.jpg
+│   ├── components/                 # 재사용 가능한 UI 컴포넌트
+│   │   ├── Background/             # 배경 관련 컴포넌트
+│   │   ├── DeployUpdateContent/    # 배포/업데이트 관련 컴포넌트
+│   │   ├── EncryptionVisualizationContent/ # 암호화 시각화 컴포넌트
+│   │   ├── FooterContent/          # 푸터 컴포넌트
+│   │   ├── HeaderContent/          # 헤더 컴포넌트
+│   │   ├── MainContent/            # 메인 콘텐츠 컴포넌트
+│   │   ├── MonitoringConent/       # 업데이트 모니터링 컴포넌트
+│   │   └── Navigation/             # 네비게이션 바 컴포넌트
+│   ├── pages/                      # 페이지 단위 컴포넌트
+│   │   ├── AccessPolicy.js         # 접근 정책 페이지
+│   │   ├── DeploymentComplete.js   # 배포 완료 페이지
+│   │   ├── DeploymentSummary.js    # 배포 요약 페이지
+│   │   ├── FileUpload.js           # 파일 업로드 페이지
+│   │   ├── Home.js                 # 홈 페이지
+│   │   ├── UpdateMonitoring.js     # 업데이트 모니터링 페이지
+│   │   └── UpdateSetting.js        # 업데이트 설정 페이지
+│   ├── App.js                      # 메인 React 컴포넌트
+│   ├── App.css                     # 메인 스타일
+│   ├── App.test.js                 # App 테스트
+│   ├── config.js                   # 설정 파일
+│   ├── index.js                    # React 앱 진입점
+│   ├── index.css                   # 전역 스타일
+│   ├── logo.svg                    # 로고
+│   ├── reportWebVitals.js          # 성능 보고
+│   └── setupTests.js               # 테스트 설정
 │
-├── Dockerfile                  # Docker 설정
-├── docker-compose.yml          # Docker Compose 설정
-├── .env                        # 환경 변수 파일
-├── .gitignore                  # Git 무시 규칙
-├── .dockerignore               # Docker 무시 규칙
-├── package.json                # 프로젝트 의존성 및 스크립트
-├── package-lock.json           # 의존성 잠금 파일
-└── README.md                   # 프로젝트 설명
+├── Dockerfile                      # Docker 설정
+├── docker-compose.yml              # Docker Compose 설정
+├── .env                            # 환경 변수 파일
+├── .gitignore                      # Git 무시 규칙
+├── .dockerignore                   # Docker 무시 규칙
+├── package.json                    # 프로젝트 의존성 및 스크립트
+├── package-lock.json               # 의존성 잠금 파일
+└── README.md                       # 프로젝트 설명
 ```
 
 ---
@@ -58,6 +69,14 @@ Blocker_Manufacturer_Frontend/
 - **Docker 지원**: Docker 및 Docker Compose를 사용하여 손쉽게 배포 가능.
 - **재사용 가능한 컴포넌트**: 확장성을 고려한 모듈식 UI 컴포넌트.
 - **환경 변수 설정**: `.env` 파일을 통해 환경별 변수 관리.
+
+---
+
+## 🌍 배포 및 서버 주소
+
+- **제조사 서버 주소**: [http://blocker.o-r.kr](http://blocker.o-r.kr)
+- **Vercel Inspect**: [https://vercel.com/3duck1s-projects/blocker-industry/C7YedDjwdeUbDPShcUjs2XAWMK1v](https://vercel.com/3duck1s-projects/blocker-industry/C7YedDjwdeUbDPShcUjs2XAWMK1v)
+- **예비 배포 주소**: [https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/](https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/)
 
 ---
 
@@ -107,6 +126,7 @@ npm start
 ### `src/components/`
 - **`Background/`**: 배경 관련 UI 컴포넌트.
 - **`DeployUpdateContent/`**: 배포 및 업데이트 관련 기능 제공.
+- **`EncryptionVisualizationContent/`**: 암호화 시각화를 위한 컴포넌트.
 - **`FooterContent/`**: 푸터 UI 컴포넌트.
 - **`HeaderContent/`**: 헤더 UI 컴포넌트.
 - **`MainContent/`**: 메인 콘텐츠 영역 컴포넌트.
