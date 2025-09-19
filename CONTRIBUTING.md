@@ -83,4 +83,4 @@ Commit messages should follow these conventions, but uppercase/lowercase is **no
 
 ## Code of Conduct
 
-Our project aims to be a safe and respectful environment for all participants. Before contributing, please read and adhere to our [Code of Conduct]([./CODE_OF_CONDUCT.md](https://github.com/HSU-Blocker/.github/blob/main/CODE_OF_CONDUCT.md)).
+Our project aims to be a safe and respectful environment for all participants. Before contributing, please read and adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md).
