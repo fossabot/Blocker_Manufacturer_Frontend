@@ -31,7 +31,7 @@ This frontend application needs to connect to the `Blocker_Manufacturer_Backend`
 
 ---
 
-## 🚀 Method 1: Running with `npm` (Standard)
+## Method 1: Running with `npm` (Standard)
 
 This is the standard method for running the application in a development environment.
 
