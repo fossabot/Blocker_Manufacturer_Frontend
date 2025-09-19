@@ -60,6 +60,73 @@ Blocker_Manufacturer_Frontend/
 └── README.md                       # 프로젝트 설명
 ```
 
+## 개요
+
+간단한 프론트엔드 애플리케이션으로, 기기(또는 소프트웨어) 배포/업데이트 관련 UI와 3D 시각화를 포함합니다. 이 리포지토리는 React 기반으로 작성되었으며, 로컬 개발 및 Docker 기반 실행을 지원합니다.
+
+## 1) 레포별 서비스 개요
+
+- 서비스 이름: Blocker Manufacturer Frontend
+- 역할: 제조사(또는 관리자) 측의 배포/업데이트 관리와 상태 모니터링 UI 제공. 일부 화면에서 3D 모델 시각화를 사용.
+
+## 2) 레포지토리 별 개발 환경
+
+- Node.js 18+ 및 npm
+- 개발 서버: Create React App (react-scripts)
+- 권장 에디터: VS Code
+- Optional: Docker (Dockerfile 및 docker-compose.yml 포함)
+
+## 3) 레포지토리 별 사용 기술
+
+- React (컴포넌트 기반 UI)
+- React Router (`react-router-dom`) - 라우팅
+- Axios - HTTP 통신
+- three.js - 3D 렌더링
+- 테스트: Testing Library 계열 (`@testing-library/react`, `@testing-library/jest-dom`, 등)
+- 웹 성능 측정: `web-vitals`
+
+## 4) 폴더 구조
+
+```
+Blocker_Manufacturer_Frontend/
+├── public/                 # 정적 파일, 3D 모델과 텍스처
+│   ├── resources/
+│   │   ├── models/         # 여러 .glb/.fbx 3D 모델 파일
+│   │   └── textures/
+├── src/                    # 애플리케이션 소스
+│   ├── api/                # axios 기반 API 래퍼
+│   ├── components/         # 재사용 컴포넌트
+│   ├── pages/              # 라우팅 페이지 컴포넌트
+│   ├── assets/             # 이미지 등 자산
+│   ├── index.js
+│   └── App.js
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+├── install.md              # 실행/설치 가이드 (이 프로젝트)
+└── LICENSES.md             # 사용된 외부 라이선스 목록
+```
+
+## 5) 실행 방법
+
+- 프로젝트별 install 가이드는 `install.md` 파일을 참고하세요.
+- 요약: 로컬에서 `npm install` 후 `npm start`로 개발 서버 실행. Docker 사용 시 Dockerfile 참조.
+
+자세한 설치/실행 명령은: `install.md`
+
+## 6) 사용한 라이선스 목록 (Wiki)
+
+- 프로젝트에서 직접 사용한 주요 오픈소스 라이브러리의 라이선스는 `LICENSES.md` 파일에 정리되어 있습니다. (트랜스티브 의존성까지 포함하려면 `license-checker` 실행 권장)
+
+## 7) 해당 레포지토리 라이선스
+
+- 이 리포지토리에 적용할 라이선스가 별도 지정되어 있지 않다면, 라이선스 파일을 추가하세요. 예: `LICENSE`에 MIT 또는 원하는 라이선스를 넣어 공개/배포 정책을 명확히 하시기 바랍니다.
+
+---
+
+추가로 원하시면 `LICENSE` 파일을 생성해 드리고, `package.json`의 dependencies를 정리해서 `npm install`로 곧바로 실행 가능한 상태로 만들어 드리겠습니다.
+
+
 ---
 
 ## 🚀 주요 기능
