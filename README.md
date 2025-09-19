@@ -40,6 +40,12 @@ This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://g
 
 ---
 
+
+## Installation
+
+See [INSTALL.md](./install.md) for detailed installation and usage instructions.
+
+
 ## Directory Structure
 
 ```
@@ -71,22 +77,21 @@ Blocker_Manufacturer_Frontend/
 └── install.md
 ```
 
-## Getting Started
 
-See [INSTALL.md](./install.md) for detailed installation and usage instructions.
+---
 
-## License Information
-
-- See the [Wiki License List](https://github.com/HSU-Blocker/Blocker_Manufacturer_Frontend/wiki/License-List) for all third-party licenses used in this repository.
-
-## Repository License
+## License
 
 This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
 
 ---
 
-Contributions and questions are welcome via Issues and Pull Requests.  
-For more information about the overall project, visit the [HSU-Blocker GitHub organization](https://github.com/HSU-Blocker).
+Contributions and questions are always welcome through Issues and Pull Requests.  
+For detailed contribution guidelines, please refer to the following file:  
+[Contribution Guide](https://github.com/HSU-Blocker/Blocker_Device?tab=contributing-ov-file)
+
 
 ---
 
+Contributions and questions are welcome via Issues and Pull Requests.  
+For more information about the overall project, visit the [HSU-Blocker GitHub organization](https://github.com/HSU-Blocker).
