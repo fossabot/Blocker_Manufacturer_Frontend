@@ -1,25 +1,28 @@
-
 # Blocker Manufacturer Frontend
-
-<table>
-  <tr>
-    <td><img width="500" height="250" src="https://github.com/user-attachments/assets/b9aeac84-ceb9-4d2f-bda7-06174e1e72cd" /></td>
-    <td><img width="500" height="250" src="https://github.com/user-attachments/assets/69b90301-c7ef-4aa5-85b9-f2aee1d46f71" /></td>
-  </tr>
-  <tr>
-    <td><img width="500" height="250" src="https://github.com/user-attachments/assets/f9a37c23-d531-4734-a88f-4a39f24d5ed5" /></td>
-    <td><img width="500" height="250" src="https://github.com/user-attachments/assets/b1e83948-0e5a-4865-b9f5-79eae5d0b4eb" /></td>
-  </tr>
-</table>
 
 ## Overview
 
-This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://github.com/HSU-Blocker) blockchain-based IoT software update platform. This web application allows manufacturers to distribute and manage software updates for IoT devices, including update registration, deployment monitoring, and policy management.
+This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://github.com/HSU-Blocker) blockchain-based IoT software update platform. This web application empowers manufacturers to freely distribute and manage software updates for their IoT devices. Key features include the ability to set an update's name, price, and access policy. Manufacturers can also view a list of previously deployed updates with the option to delete them. To enhance understanding of the deployment process onto the blockchain network, the application includes a 3D animated visualization feature.
 
 - **Service Role:** Manufacturer dashboard for update distribution and monitoring
 - **Deployment URLs:**
+  (Note: These are live previews deployed to help users easily understand the project. The intended use is to run the code locally.)
   - Main server: [http://blocker.o-r.kr](http://blocker.o-r.kr)
   - Vercel: [https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/](https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/)
+
+
+### Home Screen
+<img src="https://github.com/user-attachments/assets/b9aeac84-ceb9-4d2f-bda7-06174e1e72cd" />
+
+### Update Access Policy Configuration
+<img src="https://github.com/user-attachments/assets/69b90301-c7ef-4aa5-85b9-f2aee1d46f71" />
+
+### Update Monitoring
+<img src="https://github.com/user-attachments/assets/f9a37c23-d531-4734-a88f-4a39f24d5ed5" />
+
+### Update Deployment Visualization
+<img src="https://github.com/user-attachments/assets/b1e83948-0e5a-4865-b9f5-79eae5d0b4eb" />
+
 
 ---
 
@@ -86,11 +89,11 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 
 ---
 
-Contributions and questions are always welcome through Issues and Pull Requests.  
+Contributions and questions are always welcome through Issues and Pull Requests.
 For detailed contribution guidelines, please refer to the [Contribution Guide](./CONTRIBUTING.md).
 
 
 ---
 
-Contributions and questions are welcome via Issues and Pull Requests.  
+Contributions and questions are welcome via Issues and Pull Requests.
 For more information about the overall project, visit the [HSU-Blocker GitHub organization](https://github.com/HSU-Blocker).
