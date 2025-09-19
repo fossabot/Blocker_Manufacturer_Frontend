@@ -1,5 +1,5 @@
-# Blocker Manufacturer Frontend
 
+# Blocker Manufacturer Frontend
 
 <table>
   <tr>
@@ -12,91 +12,33 @@
   </tr>
 </table>
 
-
-## 📂 프로젝트 구조
-
-```
-Blocker_Manufacturer_Frontend/
-│
-├── public/                         # 정적 파일 및 리소스
-│   ├── index.html                  # 메인 HTML 파일
-│   ├── manifest.json               # 웹 앱 매니페스트
-│   ├── robots.txt                  # 크롤러 접근 제한 파일
-│   ├── favicon.ico                 # 파비콘
-│   ├── block.ico                   # 추가 아이콘
-│   ├── logo192.png                 # 앱 아이콘
-│   ├── logo512.png                 # 앱 아이콘
-│   └── resources/                  # 3D 모델 및 텍스처 리소스
-│       ├── models/                 # GLB/FBX 등 3D 모델 파일
-│       └── textures/               # 이미지 텍스처 파일
-│
-├── src/                            # 소스 코드
-│   ├── api/                        # API 서비스 모듈
-│   │   ├── api.js                  # API 유틸리티
-│   │   └── uploadService.js        # 파일 업로드 API 서비스
-│   ├── assets/                     # 이미지 등 정적 에셋
-│   │   └── N74.jpg
-│   ├── components/                 # 재사용 가능한 UI 컴포넌트
-│   │   ├── Background/             # 배경 관련 컴포넌트
-│   │   ├── DeployUpdateContent/    # 배포/업데이트 관련 컴포넌트
-│   │   ├── EncryptionVisualizationContent/ # 암호화 시각화 컴포넌트
-│   │   ├── FooterContent/          # 푸터 컴포넌트
-│   │   ├── HeaderContent/          # 헤더 컴포넌트
-│   │   ├── MainContent/            # 메인 콘텐츠 컴포넌트
-│   │   ├── MonitoringConent/       # 업데이트 모니터링 컴포넌트
-│   │   └── Navigation/             # 네비게이션 바 컴포넌트
-│   ├── pages/                      # 페이지 단위 컴포넌트
-│   │   ├── AccessPolicy.js         # 접근 정책 페이지
-│   │   ├── DeploymentComplete.js   # 배포 완료 페이지
-│   │   ├── DeploymentSummary.js    # 배포 요약 페이지
-│   │   ├── FileUpload.js           # 파일 업로드 페이지
-│   │   ├── Home.js                 # 홈 페이지
-│   │   ├── UpdateMonitoring.js     # 업데이트 모니터링 페이지
-│   │   └── UpdateSetting.js        # 업데이트 설정 페이지
-│   ├── App.js                      # 메인 React 컴포넌트
-│   ├── App.css                     # 메인 스타일
-│   ├── App.test.js                 # App 테스트
-│   ├── config.js                   # 설정 파일
-│   ├── index.js                    # React 앱 진입점
-│   ├── index.css                   # 전역 스타일
-│   ├── logo.svg                    # 로고
-│   ├── reportWebVitals.js          # 성능 보고
-│   └── setupTests.js               # 테스트 설정
-│
-├── Dockerfile                      # Docker 설정
-├── docker-compose.yml              # Docker Compose 설정
-├── .env                            # 환경 변수 파일
-├── .gitignore                      # Git 무시 규칙
-├── .dockerignore                   # Docker 무시 규칙
-├── package.json                    # 프로젝트 의존성 및 스크립트
-├── package-lock.json               # 의존성 잠금 파일
-└── README.md                       # 프로젝트 설명
-```
-
-## 개요
-
-간단한 프론트엔드 애플리케이션으로, 기기(또는 소프트웨어) 배포/업데이트 관련 UI와 3D 시각화를 포함합니다. 이 리포지토리는 React 기반으로 작성되었으며, 로컬 개발 및 Docker 기반 실행을 지원합니다.
-
-## 1) 레포별 서비스 개요
-
-- 서비스 이름: Blocker Manufacturer Frontend
-
-# Blocker Manufacturer Frontend
-
 ## Overview
 
-This repository provides the **Manufacturer Frontend** for the [HSU-Blocker](https://github.com/HSU-Blocker) blockchain-based IoT software update platform.  
-The frontend enables manufacturers to register new software updates, monitor update deployments, and manage update policies for connected IoT devices.
+This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://github.com/HSU-Blocker) blockchain-based IoT software update platform. This web application allows manufacturers to distribute and manage software updates for IoT devices, including update registration, deployment monitoring, and policy management.
 
-- **Service Role:** Manufacturer web dashboard for update management and monitoring
-- **Main Features:**
-   - Register and manage software updates on the blockchain
-   - Monitor update deployment status across devices
-   - Manage access policies and update packages
-- **Frontend Preview:**  
-   ![Frontend Screenshot](./public/logo192.png) <!-- Replace with actual screenshot if available -->
-- **Backend API Endpoint:**  
-   `https://your-server-address/api` <!-- Replace with actual server address -->
+- **Service Role:** Manufacturer dashboard for update distribution and monitoring
+- **Deployment URLs:**
+  - Main server: [http://blocker.o-r.kr](http://blocker.o-r.kr)
+  - Vercel: [https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/](https://blocker-industry-1kqcrsw6j-3duck1s-projects.vercel.app/)
+
+---
+
+## Development Environment
+
+- Node.js (v16+ recommended)
+- npm
+- Docker (optional, for containerized deployment)
+- Visual Studio Code (recommended)
+
+## Technology Stack
+
+- React (UI framework)
+- React Router (`react-router-dom`) for routing
+- Axios for HTTP communication
+- three.js for 3D visualization
+- WebSocket for real-time updates
+
+---
 
 ## Development Environment
 
