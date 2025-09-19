@@ -13,15 +13,19 @@ This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://g
 
 ### Home Screen
 <img src="https://github.com/user-attachments/assets/b9aeac84-ceb9-4d2f-bda7-06174e1e72cd" />
+The initial screen when accessing the website. It provides navigation to key sections such as Deploy, Update Monitoring, and About Us.
 
 ### Update Access Policy Configuration
 <img src="https://github.com/user-attachments/assets/69b90301-c7ef-4aa5-85b9-f2aee1d46f71" />
+After uploading an update file, the manufacturer configures its access policy. This allows the manufacturer to freely define the rules and conditions for the update.
 
 ### Update Monitoring
 <img src="https://github.com/user-attachments/assets/f9a37c23-d531-4734-a88f-4a39f24d5ed5" />
+This section allows manufacturers to view details of previously deployed updates, such as their name, IPFS hash, and version. Updates can also be deleted from this list.
 
 ### Update Deployment Visualization
 <img src="https://github.com/user-attachments/assets/b1e83948-0e5a-4865-b9f5-79eae5d0b4eb" />
+A 3D animated visualization showing how the manufacturer's uploaded update file is encrypted and which resulting files are uploaded to the blockchain and the IPFS network.
 
 
 ---
@@ -39,7 +43,6 @@ This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://g
 - ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=react-router&logoColor=white) Routing
 - ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white) HTTP communication
 - ![three.js](https://img.shields.io/badge/three.js-000000?style=flat&logo=three.js&logoColor=white) 3D visualization
-- ![WebSocket](https://img.shields.io/badge/WebSocket-008080?style=flat&logo=socketdotio&logoColor=white) Real-time updates
 
 ---
 
@@ -85,11 +88,9 @@ Blocker_Manufacturer_Frontend/
 
 ## License
 
-This project is licensed under the Apache-2.0 License. See [LICENSE](./LICENSE) for details.
+This project is licensed under the Apache 2.0 License. See [LICENSE](./LICENSE) for details.
 
 ---
-
-## Contribution
 
 Contributions and questions are always welcome through Issues and Pull Requests.
 For detailed contribution guidelines, please refer to the [Contribution Guide](./CONTRIBUTING.md).
