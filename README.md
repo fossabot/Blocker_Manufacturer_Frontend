@@ -12,7 +12,7 @@ This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://g
 
 
 ### Home Screen
-<img src="https://github.com/user-attachments/assets/b9aeac84-ceb9-4d2f-bda7-06174e1e72cd" />
+<img src="https://github.com/user-attachments/assets/6a7aa79d-63e6-41f3-a977-0d562c5646f8" />
 The initial screen when accessing the website. It provides navigation to key sections such as Deploy, Update Monitoring, and About Us.
 
 ### Update Access Policy Configuration
