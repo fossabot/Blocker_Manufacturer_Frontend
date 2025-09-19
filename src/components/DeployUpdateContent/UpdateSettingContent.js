@@ -26,9 +26,20 @@ function UpdateSettingContent({ updateName, price, description, onSettingsChange
   const handlePriceChange = (event) => {
     const rawValue = event.target.value;
 
-    const cleanValue = rawValue.replace(/\D/g, '');
+    // 변경된 부분: 숫자(0-9)와 온점(.)만 허용하도록 정규식 수정
+    const cleanValue = rawValue.replace(/[^0-9.]/g, '');
 
-    if (cleanValue === '') {
+    // 여러 개의 온점이 있는 경우 첫 번째 온점만 남기고 제거
+    const parts = cleanValue.split('.');
+    const integerPart = parts[0];
+    const decimalPart = parts.slice(1).join(''); // 첫 번째 이후의 모든 부분을 소수점으로 간주
+
+    let finalCleanValue = integerPart;
+    if (parts.length > 1) {
+      finalCleanValue += '.' + decimalPart;
+    }
+
+    if (finalCleanValue === '') {
       // setPrice(''); // <-- 이 줄 삭제
       // 부모에게 price만 빈 문자열로 업데이트하도록 전달
       if (onSettingsChange) {
@@ -41,17 +52,27 @@ function UpdateSettingContent({ updateName, price, description, onSettingsChange
       return;
     }
 
-    const numberValue = Number(cleanValue);
+    // toLocaleString은 정수 부분에만 쉼표를 추가하고, 소수점 이하를 유지해야 함.
+    // 따라서 숫자로 변환하여 포맷팅한 후, 소수점 이하를 다시 붙여줍니다.
+    const numericValue = parseFloat(finalCleanValue); // 실수로 파싱
 
-    if (isNaN(numberValue)) {
+    if (isNaN(numericValue)) {
       console.warn("가격 입력에 유효하지 않은 문자가 포함되었습니다:", rawValue);
       return;
     }
 
-    const formattedValue = numberValue.toLocaleString('en-US', {
+    // 정수 부분만 쉼표를 추가하고 소수점 이하를 유지
+    const [integerPartForFormat, decimalPartForFormat] = finalCleanValue.split('.');
+    let formattedValue = Number(integerPartForFormat).toLocaleString('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
+
+    if (decimalPartForFormat !== undefined) {
+      // 소수점 부분이 있다면 다시 붙여줌
+      formattedValue += '.' + decimalPartForFormat;
+    }
+
 
     // setPrice(formattedValue); // <-- 이 줄 삭제
     // 부모에게 price만 포맷된 값으로 업데이트하도록 전달
