@@ -25,38 +25,20 @@ This repository is the **Manufacturer Frontend** for the [HSU-Blocker](https://g
 
 ## Development Environment
 
-- Node.js (v16+ recommended)
-- npm
-- Docker (optional, for containerized deployment)
-- Visual Studio Code (recommended)
-
-## Technology Stack
-
-- React (UI framework)
-- React Router (`react-router-dom`) for routing
-- Axios for HTTP communication
-- three.js for 3D visualization
-- WebSocket for real-time updates
-
----
-
-## Development Environment
-
-- ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
-- ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=flat&logo=ubuntu&logoColor=white)
 - ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white) (v16+ recommended)
-- ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+- ![npm](https://img.shields.io/badge/npm-CB3837?style=flat&logo=npm&logoColor=white)
+- ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) (optional)
 - ![VSCode](https://img.shields.io/badge/Visual_Studio_Code-007ACC?style=flat&logo=visualstudiocode&logoColor=white)
 
 ## Technology Stack
 
-- ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) Frontend UI framework
-- ![Web3](https://img.shields.io/badge/Web3-F16822?style=flat&logo=web3dotjs&logoColor=white) Blockchain interaction
-- ![REST API](https://img.shields.io/badge/REST_API-6DB33F?style=flat&logo=swagger&logoColor=white) Backend communication
-- ![IPFS](https://img.shields.io/badge/IPFS-65C2CB?style=flat&logo=ipfs&logoColor=white) Distributed file storage
-- ![AES-256](https://img.shields.io/badge/AES--256-006699?style=flat&logo=databricks&logoColor=white) Secure file encryption
-- ![SHA3-256](https://img.shields.io/badge/SHA3--256-117A65?style=flat&logo=datadog&logoColor=white) File integrity verification
-- ![WebSocket](https://img.shields.io/badge/WebSocket-008080?style=flat&logo=socketdotio&logoColor=white) Real-time event monitoring
+- ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) UI framework
+- ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=react-router&logoColor=white) Routing
+- ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white) HTTP communication
+- ![three.js](https://img.shields.io/badge/three.js-000000?style=flat&logo=three.js&logoColor=white) 3D visualization
+- ![WebSocket](https://img.shields.io/badge/WebSocket-008080?style=flat&logo=socketdotio&logoColor=white) Real-time updates
+
+---
 
 ## Directory Structure
 
