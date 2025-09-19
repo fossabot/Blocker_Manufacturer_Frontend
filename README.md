@@ -88,7 +88,7 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 
 Contributions and questions are always welcome through Issues and Pull Requests.  
 For detailed contribution guidelines, please refer to the following file:  
-[Contribution Guide](https://github.com/HSU-Blocker/Blocker_Device?tab=contributing-ov-file)
+[Contribution Guide](https://github.com/HSU-Blocker/Blocker_Manufacturer_Frontend?tab=contributing-ov-file)
 
 
 ---
