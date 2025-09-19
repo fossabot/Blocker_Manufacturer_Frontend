@@ -51,6 +51,8 @@ A 3D animated visualization showing how the manufacturer's uploaded update file 
 
 See [INSTALL.md](./install.md) for detailed installation and usage instructions.
 
+---
+
 
 ## Directory Structure
 
