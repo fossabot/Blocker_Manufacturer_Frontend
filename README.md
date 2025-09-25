@@ -101,6 +101,4 @@ For detailed contribution guidelines, please refer to the [Contribution Guide](.
 
 
 ---
-
-Contributions and questions are welcome via Issues and Pull Requests.
 For more information about the overall project, visit the [HSU-Blocker GitHub organization](https://github.com/HSU-Blocker).
