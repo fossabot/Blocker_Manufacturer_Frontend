@@ -49,7 +49,7 @@ A 3D animated visualization showing how the manufacturer's uploaded update file 
 
 ## Installation
 
-See [INSTALL.md](./install.md) for detailed installation and usage instructions.
+See [install.md](./install.md) for detailed installation and usage instructions.
 
 ---
 
