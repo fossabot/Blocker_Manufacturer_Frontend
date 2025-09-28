@@ -1,5 +1,5 @@
 // src/pages/DeploymentComplete.js
-import React, { useState } from 'react'; // useState는 이 컴포넌트에서 사용하지 않아도 됩니다.
+import React from 'react';
 import CompleteHeaderContent from '../components/HeaderContent/CompleteHeaderContent';
 import CompleteFooterContent from '../components/FooterContent/CompleteFooterContent'; // 이 푸터가 필요한지 확인 필요
 import BackgroundContent from '../components/Background/BackgroundContent';

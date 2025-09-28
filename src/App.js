@@ -11,7 +11,6 @@ import UpdateMonitoringPage from './pages/UpdateMonitoring';
 import EncryptionVisualizationScene from './components/EncryptionVisualizationContent/EncryptionVisualizationScene'
 
 function AboutRedirect() {
-  const navigate = useNavigate();
 
   useEffect(() => {
     window.location.href = 'https://github.com/HSU-Blocker';

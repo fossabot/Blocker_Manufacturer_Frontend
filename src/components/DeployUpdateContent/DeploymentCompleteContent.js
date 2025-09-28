@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './DeploymentCompleteContent.module.css';
-import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 useNavigate 사용
+
 
 const DeploymentCompleteContent = ({ onHomeClick, onUpdateStatusClick }) => {
 

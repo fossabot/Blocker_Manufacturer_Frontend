@@ -1,6 +1,6 @@
 import React from 'react';
 import HeaderContent from '../components/HeaderContent/HeaderContent';
-import ProgressFooterContent from '../components/FooterContent/ProgressFooterContent';
+
 import BackgroundContent from '../components/Background/BackgroundContent';
 import DeploymentSummaryContent from '../components/DeployUpdateContent/DeploymentSummaryContent';
 import { useNavigate } from 'react-router-dom';
