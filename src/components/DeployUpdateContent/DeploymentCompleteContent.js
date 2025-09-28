@@ -15,12 +15,12 @@ const DeploymentCompleteContent = ({ onHomeClick, onUpdateStatusClick }) => {
       <div className={styles.navigationSection}>
         {/* 홈으로 버튼 */}
         <button className={styles.navButton} onClick={onHomeClick}>
-          <span className={styles.buttonText}>홈으로</span>
+          <span className={styles.buttonText}>Home</span>
           <span className={styles.arrow}>→</span>
         </button>
         {/* 업데이트 현황 버튼 */}
         <button className={styles.navButton} onClick={onUpdateStatusClick}>
-          <span className={styles.buttonText}>업데이트 현황</span>
+          <span className={styles.buttonText}>Update Monitoring</span>
           <span className={styles.arrow}>→</span>
         </button>
       </div>

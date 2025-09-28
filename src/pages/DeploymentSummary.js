@@ -22,7 +22,7 @@ function DeploymentSummary({ deploymentData, onDeployConfirm }) {
       <BackgroundContent>
         <DeploymentSummaryContent deploymentData={deploymentData} onDeployClick={onDeployConfirm} />
       </BackgroundContent>
-      <ProgressFooterContent label="Deployment Summary" onClick={handleCubeClick} />
+      {/* <ProgressFooterContent label="Deployment Summary" onClick={handleCubeClick} instructionText={""}/> */}
     </div>
   );
 }

@@ -17,10 +17,9 @@ function Home() {
     <div>
       <Navigation />
       <BackgroundContent>
-      <MainContent />
-      </BackgroundContent>
-      
-      <FooterContent label={"Software Update Start!!"} onClick={handleCubeClick}/>
+        <MainContent />
+      </BackgroundContent>      
+      <FooterContent label={"Software Update Start!!"} onClick={handleCubeClick} instructionText={"Click the button above to start deployment"}/>
     </div>
   );
 }

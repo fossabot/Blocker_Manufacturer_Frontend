@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // 저장해둔 초기 카메라 위치
 const initialCameraPosition = { x: -80, y: -25, z: 65 };
@@ -44,6 +44,15 @@ const EncryptionVisualizationScene = () => {
   const labelRendererRef = useRef(null);
   const cubeRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleExit = () => {
+    if (location.state?.from === 'deployment') {
+      navigate('/complete');
+    } else {
+      navigate('/');
+    }
+  };
 
   // keycard 애니메이션용 상태
   const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
@@ -1455,7 +1464,7 @@ const EncryptionVisualizationScene = () => {
           boxShadow: '0 2px 12px rgba(0,0,0,0.18)',
           cursor: 'pointer',
         }}
-        onClick={() => navigate('/complete')}
+        onClick={handleExit}
       >
         나가기
       </button>

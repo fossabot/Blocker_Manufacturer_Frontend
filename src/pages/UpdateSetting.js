@@ -37,7 +37,7 @@ function UpdateSetting({ onUpdateSettingsChange, updateName, price, description 
           description={description} // <-- prop 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"Update Settings"} onClick={handleCubeClick} />
+      <ProgressFooterContent label={"Update Settings"} onClick={handleCubeClick} instructionText={"Click the button above to go to Access Policy Settings"}/>
     </div>
   );
 }

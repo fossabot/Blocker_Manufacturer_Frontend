@@ -31,7 +31,7 @@ function UpdateMonitoringContent({ onClose }) {
       setTotalPages(Math.max(1, Math.ceil(data.length / 5)));
     } catch (err) {
       console.error('Failed to fetch updates:', err);
-      setError('업데이트 목록을 불러오지 못했습니다. 나중에 다시 시도해주세요.');
+      setError('Failed to load the update list. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -50,12 +50,12 @@ function UpdateMonitoringContent({ onClose }) {
   };
 
   const handleRemoveItem = async (uid) => {
-    if (!window.confirm('이 업데이트를 취소하시겠습니까?')) return;
+    if (!window.confirm('Cancel this update?')) return;
 
     console.log(`Cancelling update with uid: ${uid}`);
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
     if (!apiBaseUrl) {
-      alert('API URL이 설정되지 않았습니다. 환경 변수를 확인해주세요.');
+      alert('API URL is not set. Please check your environment variables.');
       return;
     }
 
@@ -82,11 +82,11 @@ function UpdateMonitoringContent({ onClose }) {
           return newItems;
         });
       } else {
-        throw new Error(response.data.error || '업데이트 취소에 실패했습니다.');
+        throw new Error(response.data.error || 'Failed to cancel update.');
       }
     } catch (err) {
       console.error('Failed to cancel update:', err);
-      alert(`업데이트 취소에 실패했습니다: ${err.message || '알 수 없는 오류'}`);
+      alert(`Failed to cancel update: ${err.message || 'Unknown error'}`);
       fetchItems();
     }
   };
@@ -97,7 +97,7 @@ function UpdateMonitoringContent({ onClose }) {
   return (
     <div className={styles.container}>
       {isLoading ? (
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.loading}>Loading...</div>
       ) : error ? (
         <div className={styles.error}>{error}</div>
       ) : (

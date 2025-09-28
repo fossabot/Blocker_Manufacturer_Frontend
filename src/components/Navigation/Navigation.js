@@ -1,15 +1,22 @@
 // components/Navigation/Navigation.js
 import styles from './Navigation.module.css';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 function Navigation() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigate = (path) => {
+    navigate(path, { state: { from: location } });
+  };
+
   return (
     <nav className={styles.nav}>
       <h1 className={styles.logo}>BLOCKER</h1>
       <div className={styles.links}>
-        <NavLink to="/encryption-visualization" className={({isActive}) => isActive ? styles.active : ''}>
+        <button onClick={() => handleNavigate('/encryption-visualization')} className={`${styles.navLinkButton} ${location.pathname === '/encryption-visualization' ? styles.active : ''}`}>
           Deploy 3D Animation
-        </NavLink>
+        </button>
 
         <NavLink to="/monitoring" className={({isActive}) => isActive ? styles.active : ''}>
           Update Monitoring
