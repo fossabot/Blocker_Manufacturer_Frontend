@@ -107,7 +107,9 @@
 .instructionText {
   color: white;
   font-family: 'Orbitron', sans-serif;
+  position: relative;
   top: 45px;
+  right: 20px;
 }
 
 /* .barTrack에 align-items: right; 는 유효하지 않습니다. */

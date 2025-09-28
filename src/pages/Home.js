@@ -20,7 +20,7 @@ function Home() {
       <MainContent />
       </BackgroundContent>
       
-      <FooterContent label={"Software Update Start!!"} onClick={handleCubeClick} instructionText={"위 버튼을 눌러 배포 시작"}/>
+      <FooterContent label={"Software Update Start!!"} onClick={handleCubeClick} instructionText={"Click the button above to start deployment"}/>
     </div>
   );
 }

@@ -35,7 +35,7 @@ function FileUpload({ onFileSelected, uploadedFileName }) { // prop 변경 및 �
           currentFileName={uploadedFileName} // <-- App.js로부터 받은 파일명 상태 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"Preparing Update File"} onClick={handleCubeClick} instructionText={"위 버튼을 눌러 설정으로 가기"}/>
+      <ProgressFooterContent label={"Preparing Update File"} onClick={handleCubeClick} instructionText={"Click the button above to go to settings"}/>
     </div>
   );
 }

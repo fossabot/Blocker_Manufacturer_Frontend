@@ -72,22 +72,22 @@ function App() {
     console.log("API Base URL:", process.env.REACT_APP_API_BASE_URL);
 
     if (!deploymentData.uploadedFile) {
-      alert('업로드된 파일이 없습니다.');
+      alert('No file uploaded.');
       setIsDeploying(false);
       return;
     }
     if (!deploymentData.updateName) {
-      alert('버전 이름이 필요합니다.');
+      alert('Version name is required.');
       setIsDeploying(false);
       return;
     }
     if (!deploymentData.description) {
-      alert('설명이 필요합니다.');
+      alert('Description is required.');
       setIsDeploying(false);
       return;
     }
     if (!deploymentData.price) {
-      alert('가격이 필요합니다.');
+      alert('Price is required.');
       setIsDeploying(false);
       return;
     }
@@ -134,7 +134,7 @@ function App() {
       });
 
       console.log('Deployment successful:', response.data);
-      // alert('배포가 완료되었습니다!');
+      // alert('Deployment completed!');
       setIsDeploying(false);
 
       setDeploymentData({
@@ -151,7 +151,7 @@ function App() {
         },
       });
 
-      // skipDetails 값에 따라 다른 경로로 이동
+      // Navigate to a different path depending on the skipDetails value
       if (skipDetails) {
         navigate('/complete');
       } else {
@@ -161,7 +161,7 @@ function App() {
       console.error('Deployment failed:', error);
       console.log('Server error response:', error.response?.data);
       const errorMessage = error.response?.data?.message || error.message;
-      alert(`배포 중 오류가 발생했습니다: ${errorMessage}`);
+      alert(`An error occurred during deployment: ${errorMessage}`);
       setIsDeploying(false);
     }
    }, [deploymentData, navigate]);

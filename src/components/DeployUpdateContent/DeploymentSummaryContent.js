@@ -87,14 +87,14 @@ const DeploymentSummary = ({ deploymentData, onDeployClick }) => {
         {isDeploying ? (
           <div className={styles.loadingContainer}>
             <div className={styles.loadingSpinner}></div>
-            <div className={styles.loadingText}>배포 중입니다...</div>
+            <div className={styles.loadingText}>Deployment in progress...</div>
           </div>
         ) : (
           <div className={styles.buttonContainer}>
             <button className={styles.deployButton} onClick={handleDeployButtonClick}>
               Deploy
             </button>
-            <div>*주의: 배포 버튼을 클릭 시 되돌릴 수 없습니다! 신중하게 선택해주세요!</div>
+            <div>*Warning: This action cannot be undone once the Deploy button is clicked! Please choose carefully!</div>
             <div className={styles.skipDetails}>
               <input
                 type="checkbox"
@@ -104,7 +104,7 @@ const DeploymentSummary = ({ deploymentData, onDeployClick }) => {
                 className={styles.skipCheckbox}
               />
               <label htmlFor="skipDetailsCheckbox" className={styles.skipLabel}>
-                자세한 설명 건너뛰기
+                Skip explanation
               </label>
             </div>
           </div>
