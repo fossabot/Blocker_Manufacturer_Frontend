@@ -34,12 +34,28 @@
     border-top: 5px solid white;
     font-family: 'Orbitron', sans-serif;
   }
+
+  .navLinkButton {
+    background: none;
+    border: none;
+    color: #fff;
+    width: 10rem;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: lighter;
+    transition: color 0.3s;
+    text-align: center;
+    border-top: 5px solid white;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    padding: 0;
+  }
   
-  .links a:hover {
+  .links a:hover, .navLinkButton:hover {
     color: #44d62c;
   }
   
   .active {
     /* color: #44d62c !important; */
-    
+    border-top: 5px solid #44d62c !important;
   }

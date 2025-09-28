@@ -155,8 +155,8 @@ function App() {
       if (skipDetails) {
         navigate('/complete');
       } else {
-        navigate('/encryption-visualization');
-}
+        navigate('/encryption-visualization', { state: { from: 'deployment' } });
+      }
     } catch (error) {
       console.error('Deployment failed:', error);
       console.log('Server error response:', error.response?.data);

@@ -94,7 +94,7 @@ const DeploymentSummary = ({ deploymentData, onDeployClick }) => {
             <button className={styles.deployButton} onClick={handleDeployButtonClick}>
               Deploy
             </button>
-            <div>*Warning: This action cannot be undone once the Deploy button is clicked! Please choose carefully!</div>
+            <div>*Warning: This action cannot be undone! Please choose carefully!</div>
             <div className={styles.skipDetails}>
               <input
                 type="checkbox"
