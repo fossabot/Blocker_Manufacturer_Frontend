@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './CompleteFooterContent.module.css';
 
-const CompleteFooterContent = ({ label, onClick }) => {
+const CompleteFooterContent = ({ label, onClick, instructionText }) => {
   return (
     <div className={styles.container}>
       {/* 라벨 */}
@@ -23,6 +23,7 @@ const CompleteFooterContent = ({ label, onClick }) => {
           {/* 필요하다면 다른 면도 추가 (왼쪽, 뒷면, 하단) */}
         </div>
       </div>
+      {instructionText && <div className={styles.instructionText}>{instructionText}</div>}
     </div>
   );
 };

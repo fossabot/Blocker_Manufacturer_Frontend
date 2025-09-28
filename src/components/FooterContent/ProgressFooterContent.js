@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ProgressFooterContent.module.css';
 
-const FooterContent = ({ label, onClick }) => {
+const ProgressFooterContent = ({ label, onClick, instructionText }) => {
   return (
     <div className={styles.container}>
       {/* 라벨 */}
@@ -23,8 +23,9 @@ const FooterContent = ({ label, onClick }) => {
           {/* 필요하다면 다른 면도 추가 (왼쪽, 뒷면, 하단) */}
         </div>
       </div>
+      {instructionText && <div className={styles.instructionText}>{instructionText}</div>}
     </div>
   );
 };
 
-export default FooterContent;
+export default ProgressFooterContent;

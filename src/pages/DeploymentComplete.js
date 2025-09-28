@@ -54,7 +54,7 @@ function DeploymentComplete() {
             {/* 배포 완료 페이지에서 ProgressFooterContent가 필요한지 확인하세요. */}
             {/* 보통 완료 페이지에서는 다른 종류의 푸터나 푸터가 없을 수 있습니다. */}
             {/* label을 "배포 완료" 등으로 변경하고, onClick 동작도 확인 필요 */}
-            <CompleteFooterContent label={"Software Update Deployment Complete!"} onClick={handleCubeClick} />
+            <CompleteFooterContent label={"Software Update Deployment Complete!"} onClick={handleCubeClick} instructionText={"위 버튼을 눌러 홈으로 가기"}/>
         </div>
     );
 }

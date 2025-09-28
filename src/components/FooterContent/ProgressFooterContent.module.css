@@ -104,6 +104,13 @@
     /* transform의 translate, rotate는 유지하고 scale만 변경 */
     transform: translate(-50%, -50%) scale(0.95); /* 클릭 시 약간 축소 */
   }
+
+  .instructionText {
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
+  top: 45px;
+}
   
   /* .barTrack에 align-items: right; 는 유효하지 않습니다. */
   /* .barTrack의 display: flex; 와 align-items: center; 는 .cubeButton을 세로 중앙에 맞추는 데 사용됩니다. */

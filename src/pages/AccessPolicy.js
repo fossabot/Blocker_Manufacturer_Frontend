@@ -41,7 +41,7 @@ function AccessPolicy({ onPolicyConditionsChange, policyConditions }) { // <-- p
           initialValues={policyConditions} // <-- App.js에서 받은 정책 조건 상태를 initialValues prop으로 전달
         />
       </BackgroundContent>
-      <ProgressFooterContent label={"Access Control Policy Settings"} onClick={handleCubeClick} />
+      <ProgressFooterContent label={"Access Control Policy Settings"} onClick={handleCubeClick} instructionText={"위 버튼을 눌러 요약으로 가기"}/>
     </div>
   );
 }

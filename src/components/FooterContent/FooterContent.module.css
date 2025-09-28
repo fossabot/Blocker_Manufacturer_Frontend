@@ -105,6 +105,14 @@
   transform: translate(-50%, -50%) scale(0.95); /* 클릭 시 약간 축소 */
 }
 
+.instructionText {
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
+  top: 45px;
+  left: 10px
+}
+
 /* .barTrack에 align-items: right; 는 유효하지 않습니다. */
 /* .barTrack의 display: flex; 와 align-items: center; 는 .cubeButton을 세로 중앙에 맞추는 데 사용됩니다. */
 /* 가로 바 자체를 오른쪽으로 보내려면 .barTrack에 margin-left: auto; 를 사용하시면 됩니다. */
