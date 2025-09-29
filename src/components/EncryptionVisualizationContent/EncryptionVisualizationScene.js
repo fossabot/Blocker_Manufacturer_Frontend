@@ -22,10 +22,6 @@ const EncryptionVisualizationScene = () => {
   const animationFrameId = useRef(null);
   const cubeClusterRef = useRef([]);
   const sphereClusterRef = useRef([]);
-  const centerPosition = new THREE.Vector3(0, 0, 0);
-  const cubeClusterCenter = new THREE.Vector3();
-  const sphereClusterCenter = new THREE.Vector3();
-  const signalRefs = useRef([]);
   const cameraAnimationRef = useRef(null);
   const keycardRef = useRef(null);
   const fileRef = useRef(null);
@@ -39,8 +35,9 @@ const EncryptionVisualizationScene = () => {
   const [showUploadComplete, setShowUploadComplete] = useState(false);
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const [isAbeAnimating, setIsAbeAnimating] = useState(false);
-  const [isAbeMovingToOrigin, setIsAbeMovingToOrigin] = useState(false);
-  const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false);
+  const [, setKeycardAppearProgress] = useState(0);
+  const [, setIsAbeMovingToOrigin] = useState(false);
+  const [, setIsAbeGroupMoving] = useState(false);
   const labelRendererRef = useRef(null);
   const cubeRef = useRef(null);
   const navigate = useNavigate();
@@ -54,9 +51,6 @@ const EncryptionVisualizationScene = () => {
     }
   };
 
-  // keycard 애니메이션용 상태
-  const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
-
   // policy 모델 등장 완료 후에만 이동 애니메이션을 시작하도록 상태 추가
   const [isPolicyFullyVisible, setIsPolicyFullyVisible] = useState(false);
 
@@ -65,12 +59,10 @@ const EncryptionVisualizationScene = () => {
   const [abeUploadCompleteOpacity, setAbeUploadCompleteOpacity] = useState(0);
 
   // 큐브에서 인증서 모델이 나오는 애니메이션용 상태
-  const [isCertificateEmerging, setIsCertificateEmerging] = useState(false);
   const certificateRef = useRef(null);
 
   // === CP-ABE 정책 등장 후 인증서 등장 애니메이션 ===
   const [isAbeCertificateEmerging, setIsAbeCertificateEmerging] = useState(false);
-  const abeCertificateRef = useRef(null);
 
   // === CP-ABE 업로드 애니메이션 단계 ===
   const [abeStep, setAbeStep] = useState(0); // 0: idle, 1: keycard, 2: policy, 3: cert, 4: groupMove, 5: cube, 6: clusterMove
@@ -132,8 +124,8 @@ const EncryptionVisualizationScene = () => {
 
             // === 대칭키 모델 점점 사라지기 ===
             if (keycardRef.current) {
-              let fadeFrameId;
               let fadeStart = null;
+              // let fadeFrameId;
               const fadeDuration = 1000;
               // 투명도 적용을 위해 material.transparent = true
               keycardRef.current.traverse((child) => {
@@ -151,7 +143,7 @@ const EncryptionVisualizationScene = () => {
                   }
                 });
                 if (t < 1) {
-                  fadeFrameId = requestAnimationFrame(fadeOut);
+                  requestAnimationFrame(fadeOut);
                 } else {
                   // 완전히 사라지면 씬에서 제거
                   if (sceneRef.current && keycardRef.current) {
@@ -160,7 +152,7 @@ const EncryptionVisualizationScene = () => {
                   }
                 }
               };
-              fadeFrameId = requestAnimationFrame(fadeOut);
+              requestAnimationFrame(fadeOut);
             }
 
             // === 인증서 등장 3초 ===
@@ -188,13 +180,14 @@ const EncryptionVisualizationScene = () => {
     if (!isKeycardVisible) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/key_card.glb', (gltf) => {
       if (!isMounted.current) return;
       modelObj = gltf.scene;
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(0, 0, -5);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       keycardRef.current = modelObj;
 
       // 시간 기반 애니메이션
@@ -218,8 +211,8 @@ const EncryptionVisualizationScene = () => {
 
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-        sceneRef.current.remove(modelObj);
+      if (modelObj && currentScene && modelObj.parent === currentScene) {
+        currentScene.remove(modelObj);
       }
       keycardRef.current = null;
     };
@@ -230,6 +223,7 @@ const EncryptionVisualizationScene = () => {
     if (!isFileVisible) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/file.glb', (gltf) => {
       if (!isMounted.current) return;
@@ -237,7 +231,7 @@ const EncryptionVisualizationScene = () => {
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(0, -1, 5);
       modelObj.rotateY(Math.PI / 2 * -1);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       fileRef.current = modelObj;
 
       // 시간 기반 애니메이션
@@ -261,8 +255,8 @@ const EncryptionVisualizationScene = () => {
 
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-        sceneRef.current.remove(modelObj);
+      if (modelObj && currentScene && modelObj.parent === currentScene) {
+        currentScene.remove(modelObj);
       }
       fileRef.current = null;
     };
@@ -273,13 +267,14 @@ const EncryptionVisualizationScene = () => {
     if (!isCubeVisible) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/cube.glb', (gltf) => {
       if (!isMounted.current) return;
       modelObj = gltf.scene;
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(0, 0, 0);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       cubeRef.current = modelObj;
 
       // 시간 기반 애니메이션
@@ -303,8 +298,8 @@ const EncryptionVisualizationScene = () => {
 
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-        sceneRef.current.remove(modelObj);
+      if (modelObj && currentScene && modelObj.parent === currentScene) {
+        currentScene.remove(modelObj);
       }
       cubeRef.current = null;
     };
@@ -383,6 +378,8 @@ const EncryptionVisualizationScene = () => {
   };
 
   useEffect(() => {
+    const cubeClusterCenter = new THREE.Vector3();
+    const sphereClusterCenter = new THREE.Vector3();
     isMounted.current = true;
     if (!containerRef.current) return;
 
@@ -785,6 +782,8 @@ const EncryptionVisualizationScene = () => {
     };
     window.addEventListener('resize', handleResize);
 
+    const currentContainer = containerRef.current;
+    const currentScene = sceneRef.current;
     // 클린업
     return () => {
       isMounted.current = false;
@@ -794,17 +793,17 @@ const EncryptionVisualizationScene = () => {
       controlsRef.current?.dispose();
       if (rendererRef.current) {
         rendererRef.current.dispose();
-        if (rendererRef.current.domElement.parentNode === containerRef.current) {
-          containerRef.current.removeChild(rendererRef.current.domElement);
+        if (rendererRef.current.domElement.parentNode === currentContainer) {
+          currentContainer.removeChild(rendererRef.current.domElement);
         }
       }
       if (labelRendererRef.current) {
-        if (labelRendererRef.current.domElement.parentNode === containerRef.current) {
-          containerRef.current.removeChild(labelRendererRef.current.domElement);
+        if (labelRendererRef.current.domElement.parentNode === currentContainer) {
+          currentContainer.removeChild(labelRendererRef.current.domElement);
         }
         labelRendererRef.current = null;
       }
-      sceneRef.current.clear();
+      currentScene.clear();
     };
   }, []);
 
@@ -1138,6 +1137,7 @@ const EncryptionVisualizationScene = () => {
     if (!isPolicyFullyVisible) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/policy.glb', (gltf) => {
       if (!isMounted.current) return;
@@ -1145,7 +1145,7 @@ const EncryptionVisualizationScene = () => {
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(0, -2, 4);
       modelObj.rotateY(Math.PI / 2 * -1);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       policyRef.current = modelObj;
       const duration = 1000;
       let startTime = null;
@@ -1164,8 +1164,8 @@ const EncryptionVisualizationScene = () => {
     });
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (modelObj && sceneRef.current && modelObj.parent === sceneRef.current) {
-        sceneRef.current.remove(modelObj);
+      if (modelObj && currentScene && modelObj.parent === currentScene) {
+        currentScene.remove(modelObj);
       }
       policyRef.current = null;
     };
@@ -1176,6 +1176,7 @@ const EncryptionVisualizationScene = () => {
     if (!isAbeCertificateEmerging) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/certificate.glb', (gltf) => {
       if (!isMounted.current) return;
@@ -1183,7 +1184,7 @@ const EncryptionVisualizationScene = () => {
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(-4, 0, 0);
       modelObj.rotateY(Math.PI / 2 * -1);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       certificateRef.current = modelObj;
       const duration = 1000;
       let startTime = null;
@@ -1204,8 +1205,8 @@ const EncryptionVisualizationScene = () => {
     });
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (certificateRef.current && sceneRef.current) {
-        sceneRef.current.remove(certificateRef.current);
+      if (certificateRef.current && currentScene) {
+        currentScene.remove(certificateRef.current);
       }
       certificateRef.current = null;
     };
@@ -1216,6 +1217,7 @@ const EncryptionVisualizationScene = () => {
     if (!isCertificateVisible) return;
     let frameId;
     let modelObj = null;
+    const currentScene = sceneRef.current;
     const loader = new GLTFLoader();
     loader.load('/resources/models/certificate.glb', (gltf) => {
       if (!isMounted.current) return;
@@ -1223,7 +1225,7 @@ const EncryptionVisualizationScene = () => {
       modelObj.scale.set(0, 0, 0);
       modelObj.position.set(0, 0, 0);
       modelObj.rotateY(Math.PI / 2 * -1);
-      sceneRef.current.add(modelObj);
+      currentScene.add(modelObj);
       certificateRef.current = modelObj;
       const duration = 2000; // 3초 등장
       let startTime = null;
@@ -1244,8 +1246,8 @@ const EncryptionVisualizationScene = () => {
     });
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (certificateRef.current && sceneRef.current) {
-        sceneRef.current.remove(certificateRef.current);
+      if (certificateRef.current && currentScene) {
+        currentScene.remove(certificateRef.current);
       }
       certificateRef.current = null;
     };
@@ -1282,7 +1284,8 @@ const EncryptionVisualizationScene = () => {
 
   // 반투명 구 추가
   useEffect(() => {
-    if (!sceneRef.current) return;
+    const currentScene = sceneRef.current;
+    if (!currentScene) return;
 
     // 첫 번째 구: (220, 120, 110)
     const sphere1Geometry = new THREE.SphereGeometry(25, 48, 48);
@@ -1294,7 +1297,7 @@ const EncryptionVisualizationScene = () => {
     });
     const sphere1 = new THREE.Mesh(sphere1Geometry, sphere1Material);
     sphere1.position.set(210, 110, 0);
-    sceneRef.current.add(sphere1);
+    currentScene.add(sphere1);
 
     // 두 번째 구: (220, 120, 0)
     const sphere2Geometry = new THREE.SphereGeometry(25, 48, 48);
@@ -1306,11 +1309,11 @@ const EncryptionVisualizationScene = () => {
     });
     const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
     sphere2.position.set(210, 110, 110);
-    sceneRef.current.add(sphere2);
+    currentScene.add(sphere2);
 
     return () => {
-      sceneRef.current.remove(sphere1);
-      sceneRef.current.remove(sphere2);
+      currentScene.remove(sphere1);
+      currentScene.remove(sphere2);
       sphere1.geometry.dispose();
       sphere1.material.dispose();
       sphere2.geometry.dispose();

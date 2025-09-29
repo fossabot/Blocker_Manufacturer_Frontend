@@ -1,6 +1,6 @@
 // src/pages/Home.js
 import React from 'react';
-import MainContent from '../components/MainContent/MainContent';
+import { MainContent } from '../components/MainContent/MainContent';
 import Navigation from '../components/Navigation/Navigation';
 import FooterContent from '../components/FooterContent/FooterContent';
 import BackgroundContent from '../components/Background/BackgroundContent';

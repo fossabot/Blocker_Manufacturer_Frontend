@@ -1,7 +1,6 @@
 import React from 'react';
 import HeaderContent from '../components/HeaderContent/HeaderContent';
-import ProgressFooterContent from '../components/FooterContent/ProgressFooterContent';
-import FileUploadContent from '../components/DeployUpdateContent/FileUploadContent';
+
 import BackgroundContent from '../components/Background/BackgroundContent';
 import { useNavigate } from 'react-router-dom';
 import UpdateMonitoringContent from '../components/MonitoringConent/UpdateMonitoringContent';
@@ -10,10 +9,6 @@ import UpdateMonitoringContent from '../components/MonitoringConent/UpdateMonito
 // uploadedFileName (현재 파일명 상태)를 prop으로 받습니다.
 function UpdateMonitoring() { // prop 변경 및 추가
   const navigate = useNavigate();
-
-  const handleCubeClick = () => {
-    navigate('/');
-  }
 
   const handleBackClick = () => {
     navigate('/'); 
