@@ -22,8 +22,6 @@ const EncryptionVisualizationScene = () => {
   const animationFrameId = useRef(null);
   const cubeClusterRef = useRef([]);
   const sphereClusterRef = useRef([]);
-  const cubeClusterCenter = new THREE.Vector3();
-  const sphereClusterCenter = new THREE.Vector3();
   const cameraAnimationRef = useRef(null);
   const keycardRef = useRef(null);
   const fileRef = useRef(null);
@@ -37,9 +35,9 @@ const EncryptionVisualizationScene = () => {
   const [showUploadComplete, setShowUploadComplete] = useState(false);
   const [uploadCompleteOpacity, setUploadCompleteOpacity] = useState(0);
   const [isAbeAnimating, setIsAbeAnimating] = useState(false);
-  const [keycardAppearProgress, setKeycardAppearProgress] = useState(0);
-  const [isAbeMovingToOrigin, setIsAbeMovingToOrigin] = useState(false);
-  const [isAbeGroupMoving, setIsAbeGroupMoving] = useState(false);
+  const [, setKeycardAppearProgress] = useState(0);
+  const [, setIsAbeMovingToOrigin] = useState(false);
+  const [, setIsAbeGroupMoving] = useState(false);
   const labelRendererRef = useRef(null);
   const cubeRef = useRef(null);
   const navigate = useNavigate();
@@ -127,7 +125,7 @@ const EncryptionVisualizationScene = () => {
             // === 대칭키 모델 점점 사라지기 ===
             if (keycardRef.current) {
               let fadeStart = null;
-              let fadeFrameId;
+              // let fadeFrameId;
               const fadeDuration = 1000;
               // 투명도 적용을 위해 material.transparent = true
               keycardRef.current.traverse((child) => {
@@ -145,7 +143,7 @@ const EncryptionVisualizationScene = () => {
                   }
                 });
                 if (t < 1) {
-                  fadeFrameId = requestAnimationFrame(fadeOut);
+                  requestAnimationFrame(fadeOut);
                 } else {
                   // 완전히 사라지면 씬에서 제거
                   if (sceneRef.current && keycardRef.current) {
@@ -154,7 +152,7 @@ const EncryptionVisualizationScene = () => {
                   }
                 }
               };
-              fadeFrameId = requestAnimationFrame(fadeOut);
+              requestAnimationFrame(fadeOut);
             }
 
             // === 인증서 등장 3초 ===
@@ -380,6 +378,8 @@ const EncryptionVisualizationScene = () => {
   };
 
   useEffect(() => {
+    const cubeClusterCenter = new THREE.Vector3();
+    const sphereClusterCenter = new THREE.Vector3();
     isMounted.current = true;
     if (!containerRef.current) return;
 
@@ -805,7 +805,7 @@ const EncryptionVisualizationScene = () => {
       }
       currentScene.clear();
     };
-  }, [cubeClusterCenter, sphereClusterCenter]);
+  }, []);
 
   // 카메라 초기 위치로 이동
   const handleCameraReset = () => {

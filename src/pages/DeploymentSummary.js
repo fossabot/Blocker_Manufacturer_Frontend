@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 function DeploymentSummary({ deploymentData, onDeployConfirm }) {
   const navigate = useNavigate();
 
-  const handleCubeClick = () => {
-    navigate('/summary');
-  };
+  // const handleCubeClick = () => {
+  //   navigate('/summary');
+  // };
 
   const handleBackClick = () => {
     navigate('/access');
